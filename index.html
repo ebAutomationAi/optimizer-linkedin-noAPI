@@ -1084,6 +1084,8 @@
             },
 
             handleFile(file) {
+                if (this.inFlight) return;
+
                 const errorDiv = document.getElementById('upload-error');
                 errorDiv.style.display = 'none';
 
@@ -1099,12 +1101,15 @@
                     return;
                 }
 
+                this.inFlight = true;
+
                 const reader = new FileReader();
                 reader.onload = () => {
                     this.base64Data = reader.result.split(',')[1];
                     this.submitToAPI();
                 };
                 reader.onerror = () => {
+                    this.inFlight = false;
                     errorDiv.innerText = 'Error al leer el archivo PDF.';
                     errorDiv.style.display = 'block';
                 };
@@ -1164,6 +1169,10 @@
             },
 
             async submitToAPI() {
+                // Nota: this.inFlight ya lo marca handleFile() antes de invocar
+                // submitToAPI (necesario para cerrar la ventana de carrera
+                // mientras el FileReader aún está leyendo). submitToAPI solo es
+                // responsable de liberarlo en el finally, no de volver a marcarlo.
                 const errorDiv = document.getElementById('upload-error');
 
                 this.setState('analyzing');
@@ -1252,6 +1261,7 @@
                     errorDiv.style.display = 'block';
                 } finally {
                     clearTimeout(timeoutId);
+                    this.inFlight = false;
                 }
             },
 
