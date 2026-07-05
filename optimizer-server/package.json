@@ -1,0 +1,14 @@
+{
+  "name": "optimizer-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend para LinkedIn Profile Optimizer: usa el CLI de Claude Code (suscripción) en vez de una API key.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

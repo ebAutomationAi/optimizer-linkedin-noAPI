@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Profile Optimizer — Go To Market Agency</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f2ef;
+            color: #1a1a18;
+            font-size: 13.5px;
+            line-height: 1.42857;
+            -webkit-font-smoothing: antialiased;
+        }
+        header {
+            background-color: #ffffff;
+            border-bottom: 0.5px solid #e5e5e2;
+            padding: 12px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-container {
+            max-width: 1128px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo-in {
+            background-color: #0A66C2;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 16px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+        }
+        .brand-text h1 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a18;
+        }
+        .brand-text p {
+            font-size: 11px;
+            color: #6b6b68;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-claude {
+            background-color: #f7f7f5;
+            border: 0.5px solid #d0d0cc;
+            color: #6b6b68;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        main {
+            max-width: 1128px;
+            margin: 24px auto;
+            padding: 0 24px;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        .card {
+            background-color: #ffffff;
+            border: 0.5px solid #e5e5e2;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .card-small {
+            background-color: #ffffff;
+            border: 0.5px solid #e5e5e2;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .upload-container {
+            max-width: 600px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        .drop-zone {
+            border: 1.5px dashed #d0d0cc;
+            border-radius: 12px;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            margin: 24px 0;
+        }
+        .drop-zone.hover {
+            background-color: #f0f6ff;
+            border-color: #0A66C2;
+        }
+        .drop-zone-icon {
+            font-size: 32px;
+            color: #0A66C2;
+            margin-bottom: 12px;
+        }
+        .drop-zone-text {
+            font-size: 14px;
+            color: #1a1a18;
+            margin-bottom: 4px;
+        }
+        .drop-zone-subtext {
+            font-size: 12px;
+            color: #6b6b68;
+        }
+        .input-text {
+            width: 100%;
+            padding: 8px 12px;
+            border: 0.5px solid #d0d0cc;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        .input-text:focus {
+            outline: none;
+            border-color: #0A66C2;
+        }
+        .instructions {
+            text-align: left;
+            margin-top: 32px;
+            border-top: 0.5px solid #e5e5e2;
+            padding-top: 24px;
+        }
+        .instructions h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .steps-list {
+            list-style: none;
+        }
+        .steps-list li {
+            position: relative;
+            padding-left: 32px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #6b6b68;
+        }
+        .steps-list li strong {
+            color: #1a1a18;
+        }
+        .steps-list .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background-color: #f3f2ef;
+            color: #1a1a18;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .error-message {
+            background-color: #faeeda;
+            border: 0.5px solid #BA7517;
+            color: #BA7517;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 13px;
+            display: none;
+            text-align: left;
+        }
+        .privacy-note {
+            font-size: 12px;
+            color: #9b9b98;
+            margin-top: 24px;
+        }
+        .analyzing-container {
+            max-width: 500px;
+            margin: 60px auto;
+            text-align: center;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #e5e5e2;
+            border-top-color: #0A66C2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .analyzing-container h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .analyzing-container p {
+            color: #6b6b68;
+            margin-bottom: 32px;
+        }
+        .analysis-steps {
+            text-align: left;
+            background-color: #ffffff;
+            border: 0.5px solid #e5e5e2;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .analysis-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            color: #9b9b98;
+            font-size: 13.5px;
+            border-bottom: 0.5px solid #f7f7f5;
+        }
+        .analysis-step:last-child {
+            border-bottom: none;
+        }
+        .analysis-step.pending .step-icon::before {
+            content: "○";
+            font-size: 16px;
+        }
+        .analysis-step.active {
+            color: #0A66C2;
+            font-weight: 600;
+        }
+        .analysis-step.active .step-icon::before {
+            content: "●";
+            font-size: 16px;
+            animation: pulse 1.2s infinite alternate;
+        }
+        @keyframes pulse {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+        .analysis-step.completed {
+            color: #1d9e75;
+        }
+        .analysis-step.completed .step-icon::before {
+            content: "✓";
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .profile-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            background-color: #ffffff;
+            border: 0.5px solid #e5e5e2;
+            border-radius: 12px 12px 0 0;
+            padding: 24px;
+            border-bottom: none;
+        }
+        .profile-info-block {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .avatar-initials {
+            width: 56px;
+            height: 56px;
+            background-color: #f3f2ef;
+            border: 0.5px solid #d0d0cc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #6b6b68;
+        }
+        .profile-meta h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a18;
+            margin-bottom: 2px;
+        }
+        .profile-meta p {
+            font-size: 13px;
+            color: #6b6b68;
+            margin-bottom: 6px;
+        }
+        .chips-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .profile-chip {
+            background-color: #f7f7f5;
+            border: 0.5px solid #e5e5e2;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #6b6b68;
+        }
+        .score-badge-global {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f7f7f5;
+            border: 0.5px solid #d0d0cc;
+            border-radius: 8px;
+            width: 70px;
+            height: 70px;
+        }
+        .score-badge-global .score-num {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .score-badge-global .score-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: #6b6b68;
+            letter-spacing: 0.5px;
+        }
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            border: 0.5px solid #e5e5e2;
+            padding: 12px 24px;
+            border-bottom: none;
+        }
+        .btn-back {
+            background: none;
+            border: none;
+            color: #6b6b68;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-back:hover {
+            color: #1a1a18;
+        }
+        .nav-tabs {
+            display: flex;
+            background-color: #ffffff;
+            border: 0.5px solid #e5e5e2;
+            border-bottom: 0.5px solid #d0d0cc;
+            overflow-x: auto;
+        }
+        .tab-item {
+            padding: 14px 24px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #6b6b68;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-item:hover {
+            color: #1a1a18;
+        }
+        .tab-item.active {
+            color: #0A66C2;
+            border-bottom-color: #0A66C2;
+        }
+        .progress-container {
+            background-color: #ffffff;
+            border: 0.5px solid #e5e5e2;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .progress-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b6b68;
+            letter-spacing: 0.5px;
+            min-width: 140px;
+        }
+        .progress-track {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #f3f2ef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #1D9E75;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-percent {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a18;
+            min-width: 40px;
+            text-align: right;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .grid-score {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .score-card {
+            background-color: #f7f7f5;
+            border: 0.5px solid #e5e5e2;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .score-card h4 {
+            font-size: 12px;
+            color: #6b6b68;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+        .score-value {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .score-card.score-green .score-value { color: #1D9E75; }
+        .score-card.score-yellow .score-value { color: #BA7517; }
+        .score-card.score-red .score-value { color: #E24B4A; }
+        .score-badge-text {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .score-card.score-green .score-badge-text { background-color: #e1f5ee; color: #1D9E75; }
+        .score-card.score-yellow .score-badge-text { background-color: #faeeda; color: #BA7517; }
+        .score-card.score-red .score-badge-text { background-color: #fcebeb; color: #E24B4A; }
+        .grid-strategy {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .strategy-item h4 {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b6b68;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .strategy-item p {
+            font-size: 13.5px;
+            color: #1a1a18;
+        }
+        .list-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b6b68;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+        .bullet-list {
+            list-style: none;
+        }
+        .bullet-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+            font-size: 13.5px;
+        }
+        .bullet-list.gaps li::before {
+            content: "•";
+            color: #E24B4A;
+            font-size: 18px;
+            position: absolute;
+            left: 4px;
+            top: -2px;
+        }
+        .bullet-list.strengths li::before {
+            content: "✓";
+            color: #1D9E75;
+            font-weight: 600;
+            font-size: 13px;
+            position: absolute;
+            left: 2px;
+            top: 0;
+        }
+        .two-col-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 768px) {
+            .two-col-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        .col-left-title, .col-right-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b6b68;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .current-box {
+            background-color: #f7f7f5;
+            border: 0.5px solid #e5e5e2;
+            border-left: 2px solid #6b6b68;
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            color: #6b6b68;
+            white-space: pre-line;
+            margin-bottom: 16px;
+        }
+        .opt-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f7f7f5;
+            border: 0.5px solid #e5e5e2;
+            border-bottom: none;
+            padding: 8px 16px;
+            border-radius: 8px 8px 0 0;
+        }
+        .opt-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .char-counter {
+            font-size: 11px;
+            color: #9b9b98;
+        }
+        .btn-copy {
+            background: none;
+            border: 0.5px solid #d0d0cc;
+            background-color: #ffffff;
+            color: #1a1a18;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-copy:hover {
+            background-color: #f3f2ef;
+        }
+        .btn-copy.copied {
+            background-color: #e1f5ee;
+            color: #1D9E75;
+            border-color: #1D9E75;
+        }
+        .optimized-box {
+            border: 0.5px solid #e5e5e2;
+            padding: 16px;
+            border-radius: 0 0 8px 8px;
+            font-size: 13.5px;
+            color: #1a1a18;
+            white-space: pre-line;
+            background-color: #ffffff;
+            margin-bottom: 16px;
+        }
+        .checklist-fullwidth {
+            border-top: 0.5px solid #e5e5e2;
+            padding-top: 24px;
+            margin-top: 24px;
+        }
+        .checklist-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b6b68;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            background-color: #f7f7f5;
+            border: 0.5px solid #e5e5e2;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .checklist-item:hover {
+            background-color: #f0f6ff;
+        }
+        .checklist-item input[type="checkbox"] {
+            margin-top: 3px;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+        .checklist-item-text {
+            font-size: 13px;
+            color: #1a1a18;
+        }
+        .checklist-item input[type="checkbox"]:checked + .checklist-item-text {
+            color: #6b6b68;
+            text-decoration: line-through;
+        }
+        .section-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            border-top: 0.5px solid #e5e5e2;
+            padding-top: 16px;
+        }
+        .btn-nav-prev {
+            background: none;
+            border: 0.5px solid #d0d0cc;
+            background-color: #ffffff;
+            color: #6b6b68;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-nav-prev:hover {
+            background-color: #f3f2ef;
+            color: #1a1a18;
+        }
+        .btn-nav-next {
+            background: none;
+            border: 0.5px solid transparent;
+            background-color: #0A66C2;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-nav-next:hover {
+            background-color: #004182;
+        }
+        .completion-message {
+            background-color: #e1f5ee;
+            border: 0.5px solid #1D9E75;
+            color: #1D9E75;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+        }
+        .hidden-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="brand">
+                <div class="logo-in">in</div>
+                <div class="brand-text">
+                    <h1>LinkedIn Profile Optimizer</h1>
+                    <p>Go To Market Agency</p>
+                </div>
+            </div>
+            <div class="badge-claude">Powered by Claude AI</div>
+        </div>
+    </header>
+
+    <main>
+        <div id="upload-screen" class="screen active">
+            <div class="upload-container card">
+                <div id="drop-zone" class="drop-zone">
+                    <div class="drop-zone-icon">⤓</div>
+                    <div class="drop-zone-text">Arrastra tu PDF de perfil de LinkedIn aquí</div>
+                    <div class="drop-zone-subtext">o haz clic para seleccionar el archivo desde tu ordenador</div>
+                    <input type="file" id="file-input" class="hidden-input" accept=".pdf">
+                </div>
+
+                <div id="upload-error" class="error-message"></div>
+
+                <div class="instructions">
+                    <h3>¿Cómo descargar el PDF de tu perfil desde LinkedIn?</h3>
+                    <ul class="steps-list">
+                        <li>
+                            <span class="step-number">1</span>
+                            Ve a tu perfil de LinkedIn y haz clic en el botón <strong>"Más"</strong> situado debajo de tu titular.
+                        </li>
+                        <li>
+                            <span class="step-number">2</span>
+                            Selecciona la opción <strong>"Guardar en PDF"</strong> en el menú desplegable.
+                        </li>
+                        <li>
+                            <span class="step-number">3</span>
+                            Sube el archivo descargado directamente en la zona superior de esta herramienta.
+                        </li>
+                    </ul>
+                </div>
+
+                <p class="privacy-note">Tu PDF se analiza de forma privada y no se almacena. Funciona para cualquier perfil, sector o idioma.</p>
+            </div>
+        </div>
+
+        <div id="analyzing-screen" class="screen">
+            <div class="analyzing-container">
+                <div class="spinner"></div>
+                <h2>Analizando tu perfil...</h2>
+                <p>Claude está leyendo tu perfil y generando el diagnóstico</p>
+                
+                <div class="analysis-steps">
+                    <div id="step-1" class="analysis-step pending"><span class="step-icon"></span> Extrayendo información del PDF</div>
+                    <div id="step-2" class="analysis-step pending"><span class="step-icon"></span> Evaluando headline y sección About</div>
+                    <div id="step-3" class="analysis-step pending"><span class="step-icon"></span> Analizando experiencia y skills</div>
+                    <div id="step-4" class="analysis-step pending"><span class="step-icon"></span> Generando versiones optimizadas</div>
+                    <div id="step-5" class="analysis-step pending"><span class="step-icon"></span> Preparando checklist de implementación</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-screen" class="screen">
+            <div class="profile-strip">
+                <div class="profile-info-block">
+                    <div id="profile-avatar" class="avatar-initials"></div>
+                    <div class="profile-meta">
+                        <h2 id="profile-name"></h2>
+                        <p id="profile-role"></p>
+                        <div class="chips-container">
+                            <span id="chip-followers" class="profile-chip"></span>
+                            <span id="chip-connections" class="profile-chip"></span>
+                            <span id="chip-location" class="profile-chip"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-badge-global">
+                    <span id="global-score-num" class="score-num"></span>
+                    <span class="score-label">Score</span>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button id="btn-restart" class="btn-back">← Analizar otro perfil</button>
+            </div>
+
+            <div class="nav-tabs" id="nav-tabs-container">
+                <div class="tab-item active" data-tab="strategy">Estrategia</div>
+                <div class="tab-item" data-tab="headline">Titular</div>
+                <div class="tab-item" data-tab="about">About</div>
+                <div class="tab-item" data-tab="experience">Experiencia</div>
+                <div class="tab-item" data-tab="featured">Destacados</div>
+                <div class="tab-item" data-tab="skills">Skills</div>
+                <div class="tab-item" data-tab="recommendations">Recomendaciones</div>
+            </div>
+
+            <div class="progress-container">
+                <span class="progress-label">Progreso de Optimización</span>
+                <div class="progress-track">
+                    <div id="global-progress-bar" class="progress-bar"></div>
+                </div>
+                <span id="global-progress-percent" class="progress-percent">0%</span>
+            </div>
+
+            <div id="tab-strategy" class="tab-content active">
+                <div class="card">
+                    <div class="grid-score" id="grid-score-container"></div>
+                    
+                    <div class="list-section-title">Estrategia Detectada</div>
+                    <div class="grid-strategy">
+                        <div class="strategy-item">
+                            <h4>Objetivo</h4>
+                            <p id="strat-objective"></p>
+                        </div>
+                        <div class="strategy-item">
+                            <h4>ICP</h4>
+                            <p id="strat-icp"></p>
+                        </div>
+                        <div class="strategy-item">
+                            <h4>Mecanismo</h4>
+                            <p id="strat-mechanism"></p>
+                        </div>
+                        <div class="strategy-item">
+                            <h4>CTA Actual</h4>
+                            <p id="strat-cta"></p>
+                        </div>
+                    </div>
+
+                    <div class="list-section-title">Gaps Estratégicos</div>
+                    <ul class="bullet-list gaps" id="strat-gaps"></ul>
+
+                    <div class="list-section-title">Fortalezas Identificadas</div>
+                    <ul class="bullet-list strengths" id="strat-strengths"></ul>
+                    
+                    <div class="section-footer-nav">
+                        <div></div>
+                        <button class="btn-nav-next" onclick="app.switchTab('headline')">Siguiente: Titular</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-headline" class="tab-content">
+                <div class="card">
+                    <div class="two-col-layout">
+                        <div>
+                            <div class="col-left-title">Estado Actual</div>
+                            <div class="current-box" id="current-headline"></div>
+                            <div class="col-left-title">Problemas Detectados</div>
+                            <ul class="bullet-list gaps" id="problems-headline"></ul>
+                        </div>
+                        <div>
+                            <div class="col-right-title">Versión Optimizada</div>
+                            <div class="opt-topbar">
+                                <span class="char-counter" id="count-headline"></span>
+                                <button class="btn-copy" onclick="app.copyText('optimized-headline', this)">Copiar</button>
+                            </div>
+                            <div class="optimized-box" id="optimized-headline"></div>
+                            <div class="col-right-title">Por qué funciona</div>
+                            <ul class="bullet-list strengths" id="why-headline"></ul>
+                        </div>
+                    </div>
+                    <div class="checklist-fullwidth">
+                        <div class="checklist-title">Checklist de Implementación</div>
+                        <div id="checklist-headline"></div>
+                    </div>
+                    <div class="section-footer-nav">
+                        <button class="btn-nav-prev" onclick="app.switchTab('strategy')">Anterior</button>
+                        <button class="btn-nav-next" onclick="app.switchTab('about')">Siguiente: About</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-about" class="tab-content">
+                <div class="card">
+                    <div class="two-col-layout">
+                        <div>
+                            <div class="col-left-title">Estado Actual</div>
+                            <div class="current-box" id="current-about"></div>
+                            <div class="col-left-title">Problemas Detectados</div>
+                            <ul class="bullet-list gaps" id="problems-about"></ul>
+                        </div>
+                        <div>
+                            <div class="col-right-title">Versión Optimizada</div>
+                            <div class="opt-topbar">
+                                <span></span>
+                                <button class="btn-copy" onclick="app.copyText('optimized-about', this)">Copiar</button>
+                            </div>
+                            <div class="optimized-box" id="optimized-about"></div>
+                            <div class="col-right-title">Por qué funciona</div>
+                            <ul class="bullet-list strengths" id="why-about"></ul>
+                        </div>
+                    </div>
+                    <div class="checklist-fullwidth">
+                        <div class="checklist-title">Checklist de Implementación</div>
+                        <div id="checklist-about"></div>
+                    </div>
+                    <div class="section-footer-nav">
+                        <button class="btn-nav-prev" onclick="app.switchTab('headline')">Anterior</button>
+                        <button class="btn-nav-next" onclick="app.switchTab('experience')">Siguiente: Experiencia</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-experience" class="tab-content">
+                <div class="card">
+                    <div class="two-col-layout">
+                        <div>
+                            <div class="col-left-title">Estado Actual</div>
+                            <div class="current-box" id="current-experience"></div>
+                            <div class="col-left-title">Problemas Detectados</div>
+                            <ul class="bullet-list gaps" id="problems-experience"></ul>
+                        </div>
+                        <div>
+                            <div class="col-right-title">Versión Optimizada</div>
+                            <div class="opt-topbar">
+                                <span></span>
+                                <button class="btn-copy" onclick="app.copyText('optimized-experience', this)">Copiar</button>
+                            </div>
+                            <div class="optimized-box" id="optimized-experience"></div>
+                            <div class="col-right-title">Por qué funciona</div>
+                            <ul class="bullet-list strengths" id="why-experience"></ul>
+                        </div>
+                    </div>
+                    <div class="checklist-fullwidth">
+                        <div class="checklist-title">Checklist de Implementación</div>
+                        <div id="checklist-experience"></div>
+                    </div>
+                    <div class="section-footer-nav">
+                        <button class="btn-nav-prev" onclick="app.switchTab('about')">Anterior</button>
+                        <button class="btn-nav-next" onclick="app.switchTab('featured')">Siguiente: Destacados</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-featured" class="tab-content">
+                <div class="card">
+                    <div class="two-col-layout">
+                        <div>
+                            <div class="col-left-title">Estado Actual</div>
+                            <div class="current-box" id="current-featured"></div>
+                            <div class="col-left-title">Problemas Detectados</div>
+                            <ul class="bullet-list gaps" id="problems-featured"></ul>
+                        </div>
+                        <div>
+                            <div class="col-right-title">Versión Optimizada</div>
+                            <div class="opt-topbar">
+                                <span></span>
+                                <button class="btn-copy" onclick="app.copyText('optimized-featured', this)">Copiar</button>
+                            </div>
+                            <div class="optimized-box" id="optimized-featured"></div>
+                            <div class="col-right-title">Por qué funciona</div>
+                            <ul class="bullet-list strengths" id="why-featured"></ul>
+                        </div>
+                    </div>
+                    <div class="checklist-fullwidth">
+                        <div class="checklist-title">Checklist de Implementación</div>
+                        <div id="checklist-featured"></div>
+                    </div>
+                    <div class="section-footer-nav">
+                        <button class="btn-nav-prev" onclick="app.switchTab('experience')">Anterior</button>
+                        <button class="btn-nav-next" onclick="app.switchTab('skills')">Siguiente: Skills</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-skills" class="tab-content">
+                <div class="card">
+                    <div class="two-col-layout">
+                        <div>
+                            <div class="col-left-title">Estado Actual</div>
+                            <div class="current-box" id="current-skills"></div>
+                            <div class="col-left-title">Problemas Detectados</div>
+                            <ul class="bullet-list gaps" id="problems-skills"></ul>
+                        </div>
+                        <div>
+                            <div class="col-right-title">Versión Optimizada</div>
+                            <div class="opt-topbar">
+                                <span></span>
+                                <button class="btn-copy" onclick="app.copyText('optimized-skills', this)">Copiar</button>
+                            </div>
+                            <div class="optimized-box" id="optimized-skills"></div>
+                            <div class="col-right-title">Por qué funciona</div>
+                            <ul class="bullet-list strengths" id="why-skills"></ul>
+                        </div>
+                    </div>
+                    <div class="checklist-fullwidth">
+                        <div class="checklist-title">Checklist de Implementación</div>
+                        <div id="checklist-skills"></div>
+                    </div>
+                    <div class="section-footer-nav">
+                        <button class="btn-nav-prev" onclick="app.switchTab('featured')">Anterior</button>
+                        <button class="btn-nav-next" onclick="app.switchTab('recommendations')">Siguiente: Recomendaciones</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-recommendations" class="tab-content">
+                <div class="card">
+                    <div class="two-col-layout">
+                        <div>
+                            <div class="col-left-title">Estado Actual</div>
+                            <div class="current-box" id="current-recommendations"></div>
+                            <div class="col-left-title">Problemas Detectados</div>
+                            <ul class="bullet-list gaps" id="problems-recommendations"></ul>
+                        </div>
+                        <div>
+                            <div class="col-right-title">Versión Optimizada</div>
+                            <div class="opt-topbar">
+                                <span></span>
+                                <button class="btn-copy" onclick="app.copyText('optimized-recommendations', this)">Copiar</button>
+                            </div>
+                            <div class="optimized-box" id="optimized-recommendations"></div>
+                            <div class="col-right-title">Por qué funciona</div>
+                            <ul class="bullet-list strengths" id="why-recommendations"></ul>
+                        </div>
+                    </div>
+                    <div class="checklist-fullwidth">
+                        <div class="checklist-title">Checklist de Implementación</div>
+                        <div id="checklist-recommendations"></div>
+                    </div>
+                    <div class="section-footer-nav">
+                        <button class="btn-nav-prev" onclick="app.switchTab('skills')">Anterior</button>
+                        <div class="completion-message">¡Has revisado todas las secciones estratégicas de tu perfil! Cumple con la checklist para activar tu conversión B2B.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const OPTIMIZER_BACKEND_URL = 'http://localhost:3001';
+
+        const app = {
+            state: 'upload',
+            base64Data: null,
+            apiData: null,
+            totalCheckboxes: 0,
+
+            init() {
+                this.setupDragAndDrop();
+                this.setupTabNavigation();
+                
+                document.getElementById('btn-restart').addEventListener('click', () => {
+                    this.resetApp();
+                });
+            },
+
+            setState(newState) {
+                this.state = newState;
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(`${newState}-screen`).classList.add('active');
+                
+                if (newState === 'analyzing') {
+                    this.resetAnalysisSteps();
+                }
+            },
+
+            setupDragAndDrop() {
+                const dropZone = document.getElementById('drop-zone');
+                const fileInput = document.getElementById('file-input');
+                const errorDiv = document.getElementById('upload-error');
+
+                dropZone.addEventListener('click', () => fileInput.click());
+
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('hover');
+                });
+
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('hover');
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('hover');
+                    if (e.dataTransfer.files.length > 0) {
+                        this.handleFile(e.dataTransfer.files[0]);
+                    }
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleFile(e.target.files[0]);
+                    }
+                });
+            },
+
+            handleFile(file) {
+                const errorDiv = document.getElementById('upload-error');
+                errorDiv.style.display = 'none';
+
+                if (file.type !== 'application/pdf') {
+                    errorDiv.innerText = 'Error: El archivo debe ser un documento PDF.';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    errorDiv.innerText = 'Error: El tamaño del archivo supera el límite de 5 MB.';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    this.base64Data = reader.result.split(',')[1];
+                    this.submitToAPI();
+                };
+                reader.onerror = () => {
+                    errorDiv.innerText = 'Error al leer el archivo PDF.';
+                    errorDiv.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            },
+
+            resetAnalysisSteps() {
+                this.clearProgressTimers();
+                this.currentAnalysisStep = 0;
+                for (let step = 1; step <= 5; step++) {
+                    document.getElementById(`step-${step}`).className = 'analysis-step pending';
+                }
+            },
+
+            clearProgressTimers() {
+                (this.progressTimers || []).forEach(id => clearTimeout(id));
+                this.progressTimers = [];
+            },
+
+            // Avanza el indicador visual hasta el paso `step` (marca los anteriores como completed).
+            advanceToStep(step) {
+                if (step <= this.currentAnalysisStep) return;
+                for (let s = this.currentAnalysisStep + 1; s < step; s++) {
+                    document.getElementById(`step-${s}`).className = 'analysis-step completed';
+                }
+                document.getElementById(`step-${step}`).className = 'analysis-step active';
+                this.currentAnalysisStep = step;
+            },
+
+            completeAllSteps() {
+                this.clearProgressTimers();
+                for (let step = 1; step <= 5; step++) {
+                    document.getElementById(`step-${step}`).className = 'analysis-step completed';
+                }
+                this.currentAnalysisStep = 5;
+            },
+
+            // El backend solo distingue "leyendo PDF" y "generando respuesta" (la fase larga).
+            // Dentro de "generando" no hay eventos intermedios reales, así que esos pasos
+            // se van paceando con temporizadores basados en la duración media observada (~150-190s),
+            // pero nunca se marcan como completados salvo que llegue el evento 'done' real.
+            handleProgressEvent(evt) {
+                if (evt.step === 'started' || evt.step === 'reading_pdf') {
+                    this.advanceToStep(1);
+                } else if (evt.step === 'tool_result') {
+                    this.advanceToStep(2);
+                } else if (evt.step === 'generating') {
+                    this.advanceToStep(2);
+                    if (!this.progressTimers || this.progressTimers.length === 0) {
+                        this.progressTimers = [
+                            setTimeout(() => this.advanceToStep(3), 25000),
+                            setTimeout(() => this.advanceToStep(4), 60000),
+                            setTimeout(() => this.advanceToStep(5), 100000),
+                        ];
+                    }
+                }
+            },
+
+            async submitToAPI() {
+                const errorDiv = document.getElementById('upload-error');
+
+                this.setState('analyzing');
+
+                try {
+                    const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/analyze`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            base64Data: this.base64Data
+                        })
+                    });
+
+                    if (!response.ok) {
+                        let message = `Error del servidor (status ${response.status})`;
+                        try {
+                            const errData = await response.json();
+                            message = errData.error || message;
+                        } catch {}
+                        throw new Error(message);
+                    }
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    let finalData = null;
+                    let serverError = null;
+
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop();
+
+                        for (const line of lines) {
+                            if (!line.trim()) continue;
+                            const evt = JSON.parse(line);
+                            if (evt.type === 'progress') {
+                                this.handleProgressEvent(evt);
+                            } else if (evt.type === 'done') {
+                                finalData = evt.data;
+                            } else if (evt.type === 'error') {
+                                serverError = evt.message;
+                            }
+                        }
+                    }
+
+                    if (serverError) {
+                        throw new Error(serverError);
+                    }
+                    if (!finalData) {
+                        throw new Error('El servidor no devolvió resultados.');
+                    }
+
+                    this.completeAllSteps();
+                    this.apiData = finalData;
+
+                    this.populateResults();
+                    this.setState('results');
+
+                } catch (err) {
+                    this.clearProgressTimers();
+                    this.setState('upload');
+                    errorDiv.innerText = `Ha ocurrido un error en la llamada: ${err.message}`;
+                    errorDiv.style.display = 'block';
+                }
+            },
+
+            populateResults() {
+                const data = this.apiData;
+
+                document.getElementById('profile-avatar').innerText = data.profile.initials || 'IN';
+                document.getElementById('profile-name').innerText = data.profile.name;
+                document.getElementById('profile-role').innerText = data.profile.role;
+                
+                document.getElementById('chip-followers').innerText = data.profile.followers || '0 seguidores';
+                document.getElementById('chip-connections').innerText = data.profile.connections || '0 contactos';
+                document.getElementById('chip-location').innerText = data.profile.location || 'No especificada';
+
+                document.getElementById('global-score-num').innerText = data.overall_score;
+
+                this.renderStrategyTab();
+                
+                const sections = ['headline', 'about', 'experience', 'featured', 'skills', 'recommendations'];
+                sections.forEach(secKey => {
+                    this.renderStandardSection(secKey);
+                });
+
+                this.initCheckboxes();
+            },
+
+            getScoreClass(score) {
+                if (score >= 70) return 'score-green';
+                if (score >= 50) return 'score-yellow';
+                return 'score-red';
+            },
+
+            renderStrategyTab() {
+                const data = this.apiData;
+                
+                const gridContainer = document.getElementById('grid-score-container');
+                gridContainer.innerHTML = '';
+
+                const sectionsMeta = [
+                    { name: 'Global', score: data.overall_score, badge: data.overall_score >= 70 ? 'Excelente' : data.overall_score >= 50 ? 'Mejorable' : 'Critico' },
+                    { name: 'Titular', score: data.sections.headline.score, badge: data.sections.headline.badge },
+                    { name: 'About', score: data.sections.about.score, badge: data.sections.about.badge },
+                    { name: 'Experiencia', score: data.sections.experience.score, badge: data.sections.experience.badge },
+                    { name: 'Destacados', score: data.sections.featured.score, badge: data.sections.featured.badge },
+                    { name: 'Skills', score: data.sections.skills.score, badge: data.sections.skills.badge },
+                    { name: 'Recomendaciones', score: data.sections.recommendations.score, badge: data.sections.recommendations.badge }
+                ];
+
+                sectionsMeta.forEach(item => {
+                    const cls = this.getScoreClass(item.score);
+                    const div = document.createElement('div');
+                    div.className = `score-card ${cls}`;
+                    div.innerHTML = `
+                        <h4>${item.name}</h4>
+                        <div class="score-value">${item.score}</div>
+                        <div class="score-badge-text">${item.badge}</div>
+                    `;
+                    gridContainer.appendChild(div);
+                });
+
+                document.getElementById('strat-objective').innerText = data.strategy.objective;
+                document.getElementById('strat-icp').innerText = data.strategy.icp;
+                document.getElementById('strat-mechanism').innerText = data.strategy.mechanism;
+                document.getElementById('strat-cta').innerText = data.strategy.cta_current;
+
+                const gapsUl = document.getElementById('strat-gaps');
+                gapsUl.innerHTML = '';
+                data.strategy.gaps.forEach(gap => {
+                    const li = document.createElement('li');
+                    li.innerText = gap;
+                    gapsUl.appendChild(li);
+                });
+
+                const strengthsUl = document.getElementById('strat-strengths');
+                strengthsUl.innerHTML = '';
+                data.strategy.strengths.forEach(str => {
+                    const li = document.createElement('li');
+                    li.innerText = str;
+                    strengthsUl.appendChild(li);
+                });
+            },
+
+            renderStandardSection(key) {
+                const sectionData = this.apiData.sections[key];
+
+                document.getElementById(`current-${key}`).innerText = sectionData.current;
+
+                const probUl = document.getElementById(`problems-${key}`);
+                probUl.innerHTML = '';
+                sectionData.problems.forEach(p => {
+                    const li = document.createElement('li');
+                    li.innerText = p;
+                    probUl.appendChild(li);
+                });
+
+                const optBox = document.getElementById(`optimized-${key}`);
+                optBox.innerText = sectionData.optimized;
+
+                const countEl = document.getElementById(`count-${key}`);
+                if (countEl) {
+                    countEl.innerText = `${sectionData.optimized.length} caracteres`;
+                }
+
+                const whyUl = document.getElementById(`why-${key}`);
+                whyUl.innerHTML = '';
+                sectionData.why.forEach(w => {
+                    const li = document.createElement('li');
+                    li.innerText = w;
+                    whyUl.appendChild(li);
+                });
+
+                const chkContainer = document.getElementById(`checklist-${key}`);
+                chkContainer.innerHTML = '';
+                sectionData.checklist.forEach((item, index) => {
+                    const id = `chk-${key}-${index}`;
+                    const div = document.createElement('div');
+                    div.className = 'checklist-item';
+                    div.innerHTML = `
+                        <input type="checkbox" id="${id}" data-chk-id="${id}">
+                        <label for="${id}" class="checklist-item-text">${item}</label>
+                    `;
+                    chkContainer.appendChild(div);
+                });
+            },
+
+            setupTabNavigation() {
+                const tabs = document.querySelectorAll('#nav-tabs-container .tab-item');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+                    });
+                });
+            },
+
+            switchTab(tabName) {
+                const tabButton = document.querySelector(`#nav-tabs-container .tab-item[data-tab="${tabName}"]`);
+                if (tabButton) {
+                    tabButton.click();
+                    window.scrollTo({ top: document.getElementById('nav-tabs-container').offsetTop - 20, behavior: 'smooth' });
+                }
+            },
+
+            initCheckboxes() {
+                const checkboxes = document.querySelectorAll('.checklist-item input[type="checkbox"]');
+                this.totalCheckboxes = checkboxes.length;
+
+                checkboxes.forEach(chk => {
+                    const saved = sessionStorage.getItem(chk.dataset.chkId);
+                    if (saved === 'true') {
+                        chk.checked = true;
+                    }
+
+                    chk.addEventListener('change', () => {
+                        sessionStorage.setItem(chk.dataset.chkId, chk.checked);
+                        this.updateProgressBar();
+                    });
+                });
+
+                this.updateProgressBar();
+            },
+
+            updateProgressBar() {
+                if (this.totalCheckboxes === 0) return;
+                const checkedCount = document.querySelectorAll('.checklist-item input[type="checkbox"]:checked').length;
+                const percent = Math.round((checkedCount / this.totalCheckboxes) * 100);
+                
+                document.getElementById('global-progress-bar').style.width = `${percent}%`;
+                document.getElementById('global-progress-percent').innerText = `${percent}%`;
+            },
+
+            copyText(elementId, btn) {
+                const text = document.getElementById(elementId).innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = btn.innerText;
+                    btn.innerText = '¡Copiado!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            },
+
+            resetApp() {
+                sessionStorage.clear();
+                this.base64Data = null;
+                this.apiData = null;
+                this.totalCheckboxes = 0;
+                document.getElementById('file-input').value = '';
+                document.getElementById('upload-error').style.display = 'none';
+                this.setState('upload');
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>
