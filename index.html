@@ -1211,24 +1211,35 @@
                     let finalData = null;
                     let serverError = null;
 
+                    const processLine = (line) => {
+                        if (!line.trim()) return;
+                        let evt;
+                        try {
+                            evt = JSON.parse(line);
+                        } catch (parseErr) {
+                            console.warn('[optimizer] línea NDJSON inválida descartada:', line);
+                            return;
+                        }
+                        if (evt.type === 'progress') {
+                            this.handleProgressEvent(evt);
+                        } else if (evt.type === 'done') {
+                            finalData = evt.data;
+                        } else if (evt.type === 'error') {
+                            serverError = evt.message;
+                        }
+                    };
+
                     while (true) {
                         const { value, done } = await reader.read();
                         if (done) break;
                         buffer += decoder.decode(value, { stream: true });
                         const lines = buffer.split('\n');
                         buffer = lines.pop();
+                        lines.forEach(processLine);
+                    }
 
-                        for (const line of lines) {
-                            if (!line.trim()) continue;
-                            const evt = JSON.parse(line);
-                            if (evt.type === 'progress') {
-                                this.handleProgressEvent(evt);
-                            } else if (evt.type === 'done') {
-                                finalData = evt.data;
-                            } else if (evt.type === 'error') {
-                                serverError = evt.message;
-                            }
-                        }
+                    if (buffer.trim()) {
+                        processLine(buffer);
                     }
 
                     if (serverError) {
