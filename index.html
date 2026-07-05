@@ -1491,7 +1491,9 @@
             },
 
             resetApp() {
-                sessionStorage.clear();
+                Object.keys(sessionStorage)
+                    .filter(k => k.startsWith('chk-'))
+                    .forEach(k => sessionStorage.removeItem(k));
                 this.base64Data = null;
                 this.apiData = null;
                 this.totalCheckboxes = 0;
