@@ -1168,6 +1168,13 @@
 
                 this.setState('analyzing');
 
+                // 320s = margen de 20s sobre el TIMEOUT_MS (300000ms) del backend,
+                // para no abortar en el cliente antes de que el propio servidor
+                // tenga oportunidad de responder con su propio error de timeout.
+                const CLIENT_TIMEOUT_MS = 320000;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
+
                 try {
                     const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/analyze`, {
                         method: 'POST',
@@ -1176,7 +1183,8 @@
                         },
                         body: JSON.stringify({
                             base64Data: this.base64Data
-                        })
+                        }),
+                        signal: controller.signal
                     });
 
                     if (!response.ok) {
@@ -1230,8 +1238,15 @@
                 } catch (err) {
                     this.clearProgressTimers();
                     this.setState('upload');
-                    errorDiv.innerText = `Ha ocurrido un error en la llamada: ${err.message}`;
+                    if (err.name === 'AbortError') {
+                        console.warn('[optimizer] fetch abortado por timeout 320s');
+                        errorDiv.innerText = `El análisis ha tardado más de ${CLIENT_TIMEOUT_MS / 1000}s y se ha cancelado. Inténtalo de nuevo.`;
+                    } else {
+                        errorDiv.innerText = `Ha ocurrido un error en la llamada: ${err.message}`;
+                    }
                     errorDiv.style.display = 'block';
+                } finally {
+                    clearTimeout(timeoutId);
                 }
             },
 
