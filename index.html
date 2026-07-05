@@ -1229,6 +1229,11 @@
                         throw new Error('El servidor no devolvió resultados.');
                     }
 
+                    const missingField = this.validateApiShape(finalData);
+                    if (missingField) {
+                        throw new Error(`Respuesta del servidor incompleta: falta ${missingField}`);
+                    }
+
                     this.completeAllSteps();
                     this.apiData = finalData;
 
@@ -1248,6 +1253,36 @@
                 } finally {
                     clearTimeout(timeoutId);
                 }
+            },
+
+            // Devuelve null si `data` tiene la forma que espera populateResults()/
+            // renderStandardSection()/renderStrategyTab(), o el nombre del primer
+            // campo ausente (ej. "sections.about.checklist") en caso contrario.
+            validateApiShape(data) {
+                if (!data.profile) return 'profile';
+                if (typeof data.overall_score !== 'number') return 'overall_score';
+
+                if (!data.strategy) return 'strategy';
+                for (const key of ['objective', 'icp', 'mechanism', 'cta_current', 'gaps', 'strengths']) {
+                    if (data.strategy[key] === undefined || data.strategy[key] === null) return `strategy.${key}`;
+                }
+                if (!Array.isArray(data.strategy.gaps)) return 'strategy.gaps';
+                if (!Array.isArray(data.strategy.strengths)) return 'strategy.strengths';
+
+                if (!data.sections) return 'sections';
+                const sectionKeys = ['headline', 'about', 'experience', 'featured', 'skills', 'recommendations'];
+                for (const secKey of sectionKeys) {
+                    const sec = data.sections[secKey];
+                    if (!sec) return `sections.${secKey}`;
+                    for (const field of ['score', 'badge', 'current', 'problems', 'optimized', 'why', 'checklist']) {
+                        if (sec[field] === undefined || sec[field] === null) return `sections.${secKey}.${field}`;
+                    }
+                    if (!Array.isArray(sec.problems)) return `sections.${secKey}.problems`;
+                    if (!Array.isArray(sec.why)) return `sections.${secKey}.why`;
+                    if (!Array.isArray(sec.checklist)) return `sections.${secKey}.checklist`;
+                }
+
+                return null;
             },
 
             populateResults() {
