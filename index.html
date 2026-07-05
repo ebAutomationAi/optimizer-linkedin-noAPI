@@ -1025,7 +1025,7 @@
     </main>
 
     <script>
-        const OPTIMIZER_BACKEND_URL = 'http://localhost:3001';
+        const OPTIMIZER_BACKEND_URL = window.OPTIMIZER_BACKEND_URL || 'http://localhost:3001';
 
         const app = {
             state: 'upload',
