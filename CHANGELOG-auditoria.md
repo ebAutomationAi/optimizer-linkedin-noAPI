@@ -53,3 +53,22 @@ El encargo pedía explícitamente un guard "al entrar en `submitToAPI`" además 
 
 - 7 commits en `fix/auditoria-frontend` (1 baseline + 6 de patches), rama no mergeada a `main`.
 - No se abrió pull request. Pendiente de revisión y merge manual por el usuario.
+
+## Pendientes conocidos (fuera de alcance)
+
+### S7 — Timers de progreso desacoplados de la duración real
+
+Los `setTimeout` de 25s/60s/100s en `handleProgressEvent` no reflejan la duración
+real observada del backend (~121s con Sonnet 4.6 + effort low). El paso 5 se marca
+`active` a los 100s y el usuario ve el indicador quieto ~20s más antes del `done`.
+
+Estado: cosmético, no bloqueante. No aplicado en este ciclo porque requiere:
+1. Modificar `server.js` para emitir sub-eventos reales de progreso durante la fase
+   `generating` (posible vía `claude --include-partial-messages`).
+2. Modificar el contrato NDJSON entre backend y frontend.
+3. Añadir consumidor de eventos parciales con throttling en el frontend (los
+   partial messages llegan a ritmo alto).
+
+Alternativa de bajo coste sin tocar contrato: recalibrar los timers a 40s/80s/115s
+en `handleProgressEvent` para que el paso 5 no se adelante tanto. Cambio de tres
+constantes, ninguna arquitectura tocada. Pendiente de decisión del usuario.
