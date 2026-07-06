@@ -3,18 +3,37 @@
   "$id": "https://optimizer-linkedin-noapi/schemas/coach-turn.schema.json",
   "title": "Coach Turn Schema",
   "type": "object",
-  "required": ["state", "message", "next_action"],
+  "required": [
+    "state",
+    "message",
+    "next_action"
+  ],
   "properties": {
     "state": {
       "type": "string",
-      "enum": ["INIT", "DIAGNOSIS", "HEADLINE", "ABOUT", "EXPERIENCE", "FEATURED", "SKILLS", "RECOMMENDATIONS", "DONE"]
+      "enum": [
+        "INIT",
+        "DIAGNOSIS",
+        "HEADLINE",
+        "ABOUT",
+        "EXPERIENCE",
+        "FEATURED",
+        "SKILLS",
+        "RECOMMENDATIONS",
+        "DONE"
+      ]
     },
     "message": {
       "type": "string"
     },
     "next_action": {
       "type": "string",
-      "enum": ["await_user_choice", "await_user_input", "advance", "done"]
+      "enum": [
+        "await_user_choice",
+        "await_user_input",
+        "advance",
+        "done"
+      ]
     },
     "section_index": {
       "type": "integer",
@@ -27,7 +46,11 @@
     },
     "diagnosis": {
       "type": "object",
-      "required": ["current", "problems", "score"],
+      "required": [
+        "current",
+        "problems",
+        "score"
+      ],
       "properties": {
         "current": {
           "type": "string"
@@ -45,7 +68,14 @@
         },
         "sections_scores": {
           "type": "object",
-          "required": ["headline", "about", "experience", "featured", "skills", "recommendations"],
+          "required": [
+            "headline",
+            "about",
+            "experience",
+            "featured",
+            "skills",
+            "recommendations"
+          ],
           "properties": {
             "headline": {
               "type": "integer",
@@ -89,11 +119,20 @@
       "maxItems": 3,
       "items": {
         "type": "object",
-        "required": ["id", "label", "text", "why"],
+        "required": [
+          "id",
+          "label",
+          "text",
+          "why"
+        ],
         "properties": {
           "id": {
             "type": "string",
-            "enum": ["A", "B", "C"]
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ]
           },
           "label": {
             "type": "string"
@@ -127,30 +166,84 @@
       "type": "array",
       "items": {
         "type": "string",
-        "enum": ["choice", "edit_request", "skip", "confirmation"]
+        "enum": [
+          "choice",
+          "edit_request",
+          "skip",
+          "confirmation"
+        ]
       }
     },
     "summary": {
       "type": "object",
-      "required": ["headline_final", "about_final", "experience_final", "featured_final", "skills_final", "recommendations_final"],
+      "required": [
+        "headline_final",
+        "about_final",
+        "experience_final",
+        "featured_final",
+        "skills_final",
+        "recommendations_final"
+      ],
       "properties": {
         "headline_final": {
-          "oneOf": [{ "type": "string" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "about_final": {
-          "oneOf": [{ "type": "string" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "experience_final": {
-          "oneOf": [{ "type": "string" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "featured_final": {
-          "oneOf": [{ "type": "string" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "skills_final": {
-          "oneOf": [{ "type": "string" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "recommendations_final": {
-          "oneOf": [{ "type": "string" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false
@@ -160,34 +253,69 @@
   "allOf": [
     {
       "if": {
-        "properties": { "state": { "const": "DIAGNOSIS" } },
-        "required": ["state"]
+        "properties": {
+          "state": {
+            "const": "DIAGNOSIS"
+          }
+        },
+        "required": [
+          "state"
+        ]
       },
       "then": {
-        "required": ["diagnosis", "questions"],
+        "required": [
+          "diagnosis",
+          "questions"
+        ],
         "properties": {
           "diagnosis": {
-            "required": ["sections_scores"]
+            "required": [
+              "sections_scores"
+            ]
           }
         }
       }
     },
     {
       "if": {
-        "properties": { "state": { "enum": ["HEADLINE", "ABOUT", "EXPERIENCE", "FEATURED", "SKILLS", "RECOMMENDATIONS"] } },
-        "required": ["state"]
+        "properties": {
+          "state": {
+            "enum": [
+              "HEADLINE",
+              "ABOUT",
+              "EXPERIENCE",
+              "FEATURED",
+              "SKILLS",
+              "RECOMMENDATIONS"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
       },
       "then": {
-        "required": ["alternatives", "section_index", "section_total", "questions"]
+        "required": [
+          "alternatives",
+          "questions"
+        ]
       }
     },
     {
       "if": {
-        "properties": { "state": { "const": "DONE" } },
-        "required": ["state"]
+        "properties": {
+          "state": {
+            "const": "DONE"
+          }
+        },
+        "required": [
+          "state"
+        ]
       },
       "then": {
-        "required": ["summary"]
+        "required": [
+          "summary"
+        ]
       }
     }
   ]
