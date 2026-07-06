@@ -1452,41 +1452,53 @@
                 });
             },
 
-            handleFile(file) {
-                if (this.inFlight) return;
-                this.inFlight = true;
+            
+handleFileInProgress: false,
 
-                const errorDiv = document.getElementById('upload-error');
-                errorDiv.style.display = 'none';
+handleFile(file) {
+    // ✅ Guard específico para handleFile
+    if (this.handleFileInProgress) {
+        console.warn('[optimizer] handleFile duplicado ignorado');
+        return;
+    }
+    this.handleFileInProgress = true;
 
-                if (file.type !== 'application/pdf') {
-                    errorDiv.innerText = 'Error: El archivo debe ser un documento PDF.';
-                    errorDiv.style.display = 'block';
-                    return;
-                }
+    const errorDiv = document.getElementById('upload-error');
+    errorDiv.style.display = 'none';
 
-                if (file.size > 5 * 1024 * 1024) {
-                    errorDiv.innerText = 'Error: El tamaño del archivo supera el límite de 5 MB.';
-                    errorDiv.style.display = 'block';
-                    return;
-                }
+    if (file.type !== 'application/pdf') {
+        this.handleFileInProgress = false;
+        errorDiv.innerText = 'Error: El archivo debe ser un documento PDF.';
+        errorDiv.style.display = 'block';
+        return;
+    }
 
-                const reader = new FileReader();
-                reader.onload = () => {
-                    this.state.base64Data = reader.result.split(',')[1]; // ✅ Guardar en this.state.base64Data
-                    if (USE_LEGACY_ANALYZE) {
-                        this.submitToAPI(); // ✅ Flujos antiguo (opcional)
-                    } else {
-                        this.submitToChat(this.state.base64Data); // ✅ Nuevo flujo: /api/chat
-                    }
-                };
-                reader.onerror = () => {
-                    this.inFlight = false;
-                    errorDiv.innerText = 'Error al leer el archivo PDF.';
-                    errorDiv.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            },
+    if (file.size > 5 * 1024 * 1024) {
+        this.handleFileInProgress = false;
+        errorDiv.innerText = 'Error: El tamaño del archivo supera el límite de 5 MB.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        this.state.base64Data = reader.result.split(',')[1];
+        this.handleFileInProgress = false; // ✅ Resetear aquí
+        
+        if (USE_LEGACY_ANALYZE) {
+            this.submitToAPI();
+        } else {
+            this.submitToChat(this.state.base64Data);
+        }
+    };
+    reader.onerror = () => {
+        this.handleFileInProgress = false;
+        errorDiv.innerText = 'Error al leer el archivo PDF.';
+        errorDiv.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+},
+
 
             clearProgressTimers() {
                 (this.progressTimers || []).forEach(id => clearTimeout(id));
@@ -1652,66 +1664,67 @@
             },
 
             // ✅ Nueva función para enviar a /api/chat
-            submitToChat: async function (base64Data) {
-                if (this.inFlight && this.state.currentScreen !== 'analyzing') {
-                    console.warn('[optimizer] submitToChat duplicado ignorado');
-                    return;
-                }
+// ✅ Simplificar submitToChat - usar solo inFlight
+submitToChat: async function (base64Data) {
+    if (this.inFlight) {
+        console.warn('[optimizer] submitToChat ya en ejecución');
+        return;
+    }
+    this.inFlight = true;
+    
+    this.setState('analyzing');
+    try {
+        const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ base64Data }),
+        });
 
-                this.setState('analyzing');
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.statusText}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let leftoverBuffer = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            leftoverBuffer += decoder.decode(value, { stream: true });
+
+            const lines = leftoverBuffer.split('\n');
+            leftoverBuffer = lines.pop();
+
+            for (const line of lines) {
+                if (!line.trim()) continue;
                 try {
-                    const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/chat`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ base64Data }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Error del servidor: ${response.statusText}`);
-                    }
-
-                    // ✅ Parser NDJSON (igual que en submitToAPI)
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    let leftoverBuffer = '';
-
-                    while (true) {
-                        const { value, done } = await reader.read();
-                        if (done) break;
-                        leftoverBuffer += decoder.decode(value, { stream: true });
-
-                        const lines = leftoverBuffer.split('\n');
-                        leftoverBuffer = lines.pop();
-
-                        for (const line of lines) {
-                            if (!line.trim()) continue;
-                            try {
-                                const event = JSON.parse(line);
-                                this.handleChatEvent(event);
-                            } catch (e) {
-                                console.warn('[optimizer] línea NDJSON inválida descartada:', line);
-                            }
-                        }
-                    }
-
-                    if (leftoverBuffer.trim()) {
-                        try {
-                            const event = JSON.parse(leftoverBuffer);
-                            this.handleChatEvent(event);
-                        } catch (e) {
-                            console.warn('[optimizer] línea NDJSON final inválida:', leftoverBuffer);
-                        }
-                    }
-
-                } catch (err) {
-                    this.setState('upload');
-                    const errorDiv = document.getElementById('upload-error');
-                    errorDiv.innerText = `Error en chat: ${err.message}`;
-                    errorDiv.style.display = 'block';
-                } finally {
-                    this.inFlight = false;
+                    const event = JSON.parse(line);
+                    this.handleChatEvent(event);
+                } catch (e) {
+                    console.warn('[optimizer] línea NDJSON inválida descartada:', line);
                 }
-            },
+            }
+        }
+
+        if (leftoverBuffer.trim()) {
+            try {
+                const event = JSON.parse(leftoverBuffer);
+                this.handleChatEvent(event);
+            } catch (e) {
+                console.warn('[optimizer] línea NDJSON final inválida:', leftoverBuffer);
+            }
+        }
+
+    } catch (err) {
+        this.setState('upload');
+        const errorDiv = document.getElementById('upload-error');
+        errorDiv.innerText = `Error en chat: ${err.message}`;
+        errorDiv.style.display = 'block';
+    } finally {
+        this.inFlight = false;
+    }
+},
 
             // ✅ Manejar eventos del chat
             handleChatEvent: function (event) {
