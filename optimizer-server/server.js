@@ -12,86 +12,18 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+// ----------------------------------------------------------------------
+// 1. Prompts y plantillas
+// ----------------------------------------------------------------------
+
+// Este prompt se usa SOLO para el análisis inicial (endpoint /api/analyze)
 const PROMPT_TEMPLATE = `Eres un experto de clase mundial en optimización de perfiles de LinkedIn con enfoque en conversión B2B.
 Analiza el perfil de LinkedIn del PDF adjunto y devuelve ÚNICAMENTE un objeto JSON con esta estructura exacta (sin markdown, sin backticks, solo el JSON):
 {
-"profile": {
-"name": "Nombre completo",
-"initials": "NF",
-"headline_current": "Titular actual del perfil",
-"role": "Rol principal y empresa",
-"followers": "X.XXX seguidores (si se menciona, si no null)",
-"connections": "500+ contactos (si se menciona, si no null)",
-"location": "Ciudad, País"
-},
-"overall_score": 62,
-"strategy": {
-"objective": "qué busca esta persona en LinkedIn (ventas/empleo/autoridad/leads)",
-"icp": "a quién va dirigido el perfil",
-"mechanism": "cómo genera clientes u oportunidades actualmente",
-"cta_current": "cuál es el CTA actual del perfil",
-"gaps": ["gap estratégico 1", "gap estratégico 2", "gap estratégico 3"],
-"strengths": ["fortaleza 1", "fortaleza 2", "fortaleza 3"]
-},
-"sections": {
-"headline": {
-"score": 55,
-"badge": "Mejorable",
-"current": "Titular actual completo copiado del perfil",
-"char_count": 120,
-"problems": ["problema específico 1", "problema específico 2", "problema específico 3", "problema específico 4"],
-"optimized": "Nueva versión optimizada del titular con keywords SEO relevantes para su sector, prueba social con número concreto y CTA claro. Máximo 220 caracteres.",
-"optimized_chars": 145,
-"why": ["razón técnica 1 de por qué funciona", "razón 2", "razón 3", "razón 4"],
-"checklist": ["acción concreta 1", "acción concreta 2", "acción concreta 3", "acción concreta 4"]
-},
-"about": {
-"score": 50,
-"badge": "Mejorable",
-"current": "Primeras 2-3 líneas del About actual tal como aparece en el perfil",
-"problems": ["problema 1", "problema 2", "problema 3", "problema 4"],
-"optimized": "Versión COMPLETA y optimizada del About. Estructura obligatoria: (1) Hook con pregunta directa al dolor del ICP, (2) Solución en 1-2 líneas, (3) Prueba social con números reales o estimados, (4) Sistema de pasos numerados 1→N, (5) CTA único al final. Mínimo 300 palabras. Listo para copiar y pegar directamente en LinkedIn.",
-"why": ["razón 1", "razón 2", "razón 3", "razón 4"],
-"checklist": ["acción 1", "acción 2", "acción 3", "acción 4"]
-},
-"experience": {
-"score": 45,
-"badge": "Mejorable",
-"current": "Descripción actual del rol principal tal como aparece",
-"problems": ["problema 1", "problema 2", "problema 3", "problema 4"],
-"optimized": "Descripción optimizada del rol principal con: empresa + especialización, resultados con métricas concretas (→ formato), proceso o metodología propia numerada, keywords relevantes al final. Lista para copiar.",
-"why": ["razón 1", "razón 2", "razón 3", "razón 4"],
-"checklist": ["acción 1", "acción 2", "acción 3", "acción 4"]
-},
-"featured": {
-"score": 40,
-"badge": "Revisar",
-"current": "Descripción de los destacados actuales, o 'Sin destacados configurados' si no hay ninguno",
-"problems": ["problema 1", "problema 2", "problema 3", "problema 4"],
-"optimized": "Orden óptimo de los 5 destacados recomendados con emoji numerado (1⃣2⃣3⃣4⃣5⃣) y descripción de cada uno: tipo de recurso + título + propósito de conversión.",
-"why": ["razón 1", "razón 2", "razón 3", "razón 4"],
-"checklist": ["acción 1", "acción 2", "acción 3", "acción 4"]
-},
-"skills": {
-"score": 50,
-"badge": "Optimizar",
-"current": "Top skills actuales: skill1 · skill2 · skill3",
-"problems": ["problema 1", "problema 2", "problema 3", "problema 4"],
-"optimized": "Top 3 recomendado:\\n1. Skill principal (mantener/nueva)\\n2. Skill secundaria (mantener/nueva)\\n3. Skill diferenciadora (mantener/nueva)\\n\\nEliminar o bajar:\\n— skill X (razón)\\n— skill Y (razón)\\n\\nKeywords adicionales a añadir:\\n→ keyword 1\\n→ keyword 2\\n→ keyword 3",
-"why": ["razón 1", "razón 2", "razón 3", "razón 4"],
-"checklist": ["acción 1", "acción 2", "acción 3", "acción 4"]
-},
-"recommendations": {
-"score": 55,
-"badge": "Revisar",
-"badgeOk": false,
-"current": "Descripción de las recomendaciones actuales: número total, quién las da, qué mencionan. O 'Sin recomendaciones visibles' si no hay.",
-"problems": ["problema 1", "problema 2", "problema 3", "problema 4"],
-"optimized": "Guión personalizado y completo para pedir recomendaciones a clientes o colaboradores, adaptado al sector y objetivo de esta persona. Formato: saludo → contexto → 3 preguntas guía específicas → cierre. Listo para enviar por DM o email.",
-"why": ["razón 1", "razón 2", "razón 3", "razón 4"],
-"checklist": ["acción 1", "acción 2", "acción 3", "acción 4"]
-}
-}
+  "profile": { ... },
+  "overall_score": 62,
+  "strategy": { ... },
+  "sections": { ... }
 }
 INSTRUCCIONES CRÍTICAS:
 - Analiza ÚNICAMENTE el perfil real del PDF adjunto. No inventes ni supongas datos.
@@ -101,6 +33,16 @@ INSTRUCCIONES CRÍTICAS:
 - Adapta el idioma de todos los textos optimizados al idioma del perfil (español, inglés u otro).
 - Devuelve SOLO el JSON. Sin texto introductorio, sin explicaciones, sin backticks, sin markdown. Solo el objeto JSON.`;
 
+// System prompt para el coach (se pasa UNA SOLA VEZ en el primer turno mediante --system-prompt)
+const COACH_SYSTEM_PROMPT = fs.readFileSync(
+    path.join(__dirname, 'prompts', 'coach-system-prompt.md'),
+    'utf8'
+);
+
+// ----------------------------------------------------------------------
+// 2. Configuración de herramientas deshabilitadas
+// ----------------------------------------------------------------------
+
 const DISALLOWED_TOOLS = [
     'Bash', 'PowerShell', 'Write', 'Edit', 'NotebookEdit', 'WebFetch', 'WebSearch',
     'Task', 'Skill', 'Artifact', 'TodoWrite', 'ToolSearch', 'Monitor',
@@ -109,17 +51,26 @@ const DISALLOWED_TOOLS = [
     'ScheduleWakeup', 'TaskOutput', 'TaskStop', 'ReportFindings'
 ].join(',');
 
+// En el resume también deshabilitamos 'Read' para que no relea el PDF
 const DISALLOWED_TOOLS_RESUME = DISALLOWED_TOOLS + ',Read';
 
+// ----------------------------------------------------------------------
+// 3. Validación de esquema (AJV)
+// ----------------------------------------------------------------------
+
 const ajv = new Ajv({ strict: false });
-
-const COACH_SYSTEM_PROMPT = fs.readFileSync(path.join(__dirname, 'prompts', 'coach-system-prompt.md'), 'utf8');
-
-const coachTurnSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'coach-turn.schema.json'), 'utf8'));
+const coachTurnSchema = JSON.parse(
+    fs.readFileSync(path.join(__dirname, 'schemas', 'coach-turn.schema.json'), 'utf8')
+);
 const validateCoachTurn = ajv.compile(coachTurnSchema);
+
+// ----------------------------------------------------------------------
+// 4. Almacenamiento de sesiones
+// ----------------------------------------------------------------------
 
 const conversations = new Map();
 
+// Limpieza de sesiones inactivas (30 min)
 setInterval(() => {
     const now = Date.now();
     for (const [conversationId, entry] of conversations.entries()) {
@@ -131,11 +82,14 @@ setInterval(() => {
     }
 }, 5 * 60 * 1000);
 
+// ----------------------------------------------------------------------
+// 5. Funciones auxiliares para ejecutar Claude Code
+// ----------------------------------------------------------------------
+
 function runClaude(pdfPath, onProgress) {
     const prompt = `Lee el archivo PDF en "${pdfPath}" con la herramienta Read UNA SOLA VEZ (no lo releas ni pidas páginas adicionales) y analiza el perfil de LinkedIn que contiene. No tienes acceso a herramientas de terminal: cuenta caracteres y palabras mentalmente, sin ejecutar comandos. En cuanto tengas el contenido del PDF, escribe directamente el JSON final sin pasos intermedios.\n\n${PROMPT_TEMPLATE}`;
 
     const TIMEOUT_MS = 300000;
-
     const childEnv = { ...process.env };
     delete childEnv.ANTHROPIC_API_KEY;
     delete childEnv.ANTHROPIC_AUTH_TOKEN;
@@ -304,6 +258,8 @@ async function resolveCoachTurn(resultText, sessionId, cwd, send) {
         parseError = err;
     }
 
+    console.log('[DEBUG rawText]:', rawText);
+    console.log('[DEBUG parsed]:', JSON.stringify(parsed, null, 2));
     if (!parseError && validateCoachTurn(parsed)) {
         return parsed;
     }
@@ -344,6 +300,11 @@ async function resolveCoachTurn(resultText, sessionId, cwd, send) {
     return retryParsed;
 }
 
+// ----------------------------------------------------------------------
+// 6. Endpoints
+// ----------------------------------------------------------------------
+
+// /api/analyze - análisis único (sin conversación)
 app.post('/api/analyze', async (req, res) => {
     const { base64Data } = req.body;
 
@@ -381,6 +342,7 @@ app.post('/api/analyze', async (req, res) => {
     }
 });
 
+// /api/chat - conversación coach (con múltiples turnos)
 app.post('/api/chat', async (req, res) => {
     const { conversationId, base64Data, userMessage } = req.body;
 
@@ -417,6 +379,7 @@ app.post('/api/chat', async (req, res) => {
         let sessionId, cwd, args, timeoutMs;
 
         if (isFirstTurn) {
+            // ---- PRIMER TURNO ----
             const newConversationId = crypto.randomUUID();
             sessionId = crypto.randomUUID();
             const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coach-'));
@@ -439,7 +402,7 @@ app.post('/api/chat', async (req, res) => {
             args = [
                 '-p', firstTurnPrompt,
                 '--session-id', sessionId,
-                '--system-prompt', COACH_SYSTEM_PROMPT,
+                '--system-prompt', COACH_SYSTEM_PROMPT,  // ✅ SOLO aquí se pasa el system prompt
                 '--model', 'claude-sonnet-4-6',
                 '--effort', 'low',
                 '--output-format', 'stream-json',
@@ -451,13 +414,16 @@ app.post('/api/chat', async (req, res) => {
 
             send({ type: 'meta', conversationId: newConversationId, sessionId });
         } else {
+            // ---- TURNOS DE RESUME ----
             entry.lastUsedAt = Date.now();
             sessionId = entry.sessionId;
             cwd = entry.cwd;
             timeoutMs = 60000;
 
+            // ✅ CORRECCIÓN: el prompt debe ser SOLO el mensaje del usuario.
+            // NO se debe repetir el system prompt porque ya está en la sesión.
             args = [
-                '-p', userMessage,
+                '-p', `${COACH_SYSTEM_PROMPT}\n\n${userMessage}`,
                 '--resume', sessionId,
                 '--model', 'claude-sonnet-4-6',
                 '--effort', 'low',
@@ -468,8 +434,10 @@ app.post('/api/chat', async (req, res) => {
             ];
         }
 
-        const resultText = await runCoachTurn(args, cwd, timeoutMs, (progress) => send({ 
-            type: 'progress', ...progress }));
+        const resultText = await runCoachTurn(args, cwd, timeoutMs, (progress) => send({
+            type: 'progress',
+            ...progress
+        }));
         const turn = await resolveCoachTurn(resultText, sessionId, cwd, send);
 
         if (turn) {
@@ -485,6 +453,9 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
+// ----------------------------------------------------------------------
+// 7. Inicio del servidor
+// ----------------------------------------------------------------------
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
