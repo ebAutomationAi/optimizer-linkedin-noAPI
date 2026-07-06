@@ -64,6 +64,27 @@ const coachTurnSchema = JSON.parse(
 );
 const validateCoachTurn = ajv.compile(coachTurnSchema);
 
+// name: SCHEMA_CONTRACT_PROMPT
+// path: server.js
+// type: new constant, inserted after coachTurnSchema definition
+const SCHEMA_CONTRACT_PROMPT = [
+    'Debes responder EXCLUSIVAMENTE con un objeto JSON válido conforme al siguiente JSON Schema.',
+    'No incluyas texto fuera del JSON. No uses code fences. No añadas comentarios.',
+    'Todos los campos marcados como required son obligatorios.',
+    'Los valores enum deben coincidir EXACTAMENTE con los listados (case-sensitive).',
+    '',
+    'JSON Schema del contrato coach-turn:',
+    '```json',
+    JSON.stringify(coachTurnSchema, null, 2),
+    '```',
+    '',
+    'Recordatorios críticos:',
+    '- state: uno de los valores enum definidos en el schema.',
+    '- alternatives[]: cada elemento requiere los campos definidos, incluyendo "why" no vacío.',
+    '- awaiting[]: cada elemento debe ser uno de los valores enum definidos en el schema.',
+    '- Si un array es opcional y no aplica, omítelo o envía []; no inventes campos.'
+].join('\n');
+
 // ----------------------------------------------------------------------
 // 4. Almacenamiento de sesiones
 // ----------------------------------------------------------------------
@@ -247,7 +268,7 @@ function runCoachTurn(args, cwd, timeoutMs, onProgress) {
     });
 }
 
-async function resolveCoachTurn(resultText, sessionId, cwd, send) {
+async function resolveCoachTurn(resultText, sessionId, cwd, send, isFirstTurn, attemptLabel) {
     const rawText = resultText.replace(/```json|```/g, '').trim();
 
     let parsed;
@@ -266,10 +287,24 @@ async function resolveCoachTurn(resultText, sessionId, cwd, send) {
 
     send({ type: 'progress', step: 'retry_schema' });
 
+    // name: retry prompt — inject full schema contract
+    // path: server.js — inside resolveCoachTurn, retry branch
+    // type: replacement (supersedes previous ALTERNATIVES_CONTRACT, now covered by SCHEMA_CONTRACT_PROMPT)
     const retryPrompt = parseError
-        ? 'Your previous response was not valid JSON. Return ONLY the JSON object matching the coach turn schema. No markdown, no backticks.'
-        : 'Your previous response did not match the required schema. Return ONLY valid JSON. Errors: ' + JSON.stringify(validateCoachTurn.errors);
-
+        ? `Your previous response was not valid JSON. Return ONLY the JSON object matching the coach turn schema. No markdown, no backticks.`
+        : [
+            'La respuesta anterior no cumple el schema requerido.',
+            'Vuelve a generar la respuesta corrigiendo el error.',
+            '',
+            '── CONTRATO DE RESPUESTA (obligatorio) ──',
+            SCHEMA_CONTRACT_PROMPT,
+            '',
+            '── ERROR DETECTADO ──',
+            JSON.stringify(validateCoachTurn.errors),
+            '',
+            'Corrige exclusivamente el/los campo(s) señalados.',
+            'No modifiques el resto de la respuesta si era válido.'
+        ].join('\n');
     const retryArgs = [
         '-p', retryPrompt,
         '--resume', sessionId,
@@ -293,6 +328,30 @@ async function resolveCoachTurn(resultText, sessionId, cwd, send) {
     }
 
     if (retryParseError || !validateCoachTurn(retryParsed)) {
+        // name: schema_violation structured log
+        // path: server.js
+        // type: insertion before schema_violation event construction
+        const _svAjvErrors = validateCoachTurn.errors;
+        const _svParsed = retryParsed;
+
+        const _svFailedFields = (Array.isArray(_svAjvErrors) ? _svAjvErrors : []).map(e => ({
+            path: e.instancePath || '(root)',
+            keyword: e.keyword,
+            missing: e.params && e.params.missingProperty,
+            allowed: e.params && e.params.allowedValues,
+            message: e.message
+        }));
+
+        console.log('[SCHEMA_VIOLATION]', JSON.stringify({
+            timestamp: new Date().toISOString(),
+            isFirstTurn: isFirstTurn,
+            attemptLabel: attemptLabel,
+            sessionId: sessionId,
+            failedFields: _svFailedFields,
+            modelResponseKeys: Object.keys(_svParsed || {}),
+            modelResponseState: _svParsed && _svParsed.state
+        }));
+
         send({ type: 'error', code: 'schema_violation', message: JSON.stringify(validateCoachTurn.errors) });
         return null;
     }
@@ -420,10 +479,20 @@ app.post('/api/chat', async (req, res) => {
             cwd = entry.cwd;
             timeoutMs = 60000;
 
-            // ✅ CORRECCIÓN: el prompt debe ser SOLO el mensaje del usuario.
-            // NO se debe repetir el system prompt porque ya está en la sesión.
+            // server.js — resumeTurn function, antes de la invocación a Claude CLI
+            // Reforzar el enum en el prompt de resume (contrato mínimo, no repetir system completo)
+            const ALLOWED_STATES = '["INIT","DIAGNOSIS","HEADLINE","ABOUT","EXPERIENCE","FEATURED","SKILLS","RECOMMENDATIONS","DONE"]';
+
+            // name: resume prompt — append schema contract
+            // path: server.js resume-turn block
+            // type: replacement — append SCHEMA_CONTRACT_PROMPT, preserve existing content
+            const resumePrompt = `Responde SOLO con JSON válido. El valor de "state" DEBE ser uno de estos exactamente: ${ALLOWED_STATES}. Mensaje del usuario: ${userMessage}
+
+── CONTRATO DE RESPUESTA ──
+${SCHEMA_CONTRACT_PROMPT}`;
+
             args = [
-                '-p', `${COACH_SYSTEM_PROMPT}\n\n${userMessage}`,
+                '-p', resumePrompt,
                 '--resume', sessionId,
                 '--model', 'claude-sonnet-4-6',
                 '--effort', 'low',
@@ -438,7 +507,7 @@ app.post('/api/chat', async (req, res) => {
             type: 'progress',
             ...progress
         }));
-        const turn = await resolveCoachTurn(resultText, sessionId, cwd, send);
+        const turn = await resolveCoachTurn(resultText, sessionId, cwd, send, isFirstTurn, isFirstTurn ? 'first-attempt' : 'resume-attempt');
 
         if (turn) {
             send({ type: 'turn', data: turn });
