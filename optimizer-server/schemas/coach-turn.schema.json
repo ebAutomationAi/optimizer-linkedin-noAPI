@@ -1,0 +1,194 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://optimizer-linkedin-noapi/schemas/coach-turn.schema.json",
+  "title": "Coach Turn Schema",
+  "type": "object",
+  "required": ["state", "message", "next_action"],
+  "properties": {
+    "state": {
+      "type": "string",
+      "enum": ["INIT", "DIAGNOSIS", "HEADLINE", "ABOUT", "EXPERIENCE", "FEATURED", "SKILLS", "RECOMMENDATIONS", "DONE"]
+    },
+    "message": {
+      "type": "string"
+    },
+    "next_action": {
+      "type": "string",
+      "enum": ["await_user_choice", "await_user_input", "advance", "done"]
+    },
+    "section_index": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7
+    },
+    "section_total": {
+      "type": "integer",
+      "const": 7
+    },
+    "diagnosis": {
+      "type": "object",
+      "required": ["current", "problems", "score"],
+      "properties": {
+        "current": {
+          "type": "string"
+        },
+        "problems": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "sections_scores": {
+          "type": "object",
+          "required": ["headline", "about", "experience", "featured", "skills", "recommendations"],
+          "properties": {
+            "headline": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "about": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "experience": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "featured": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "skills": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "recommendations": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "alternatives": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "text", "why"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": ["A", "B", "C"]
+          },
+          "label": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "why": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "chars": {
+            "type": "integer"
+          },
+          "words": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "awaiting": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["choice", "edit_request", "skip", "confirmation"]
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["headline_final", "about_final", "experience_final", "featured_final", "skills_final", "recommendations_final"],
+      "properties": {
+        "headline_final": {
+          "oneOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "about_final": {
+          "oneOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "experience_final": {
+          "oneOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "featured_final": {
+          "oneOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "skills_final": {
+          "oneOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "recommendations_final": {
+          "oneOf": [{ "type": "string" }, { "type": "null" }]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": { "state": { "const": "DIAGNOSIS" } },
+        "required": ["state"]
+      },
+      "then": {
+        "required": ["diagnosis", "questions"],
+        "properties": {
+          "diagnosis": {
+            "required": ["sections_scores"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "state": { "enum": ["HEADLINE", "ABOUT", "EXPERIENCE", "FEATURED", "SKILLS", "RECOMMENDATIONS"] } },
+        "required": ["state"]
+      },
+      "then": {
+        "required": ["alternatives", "diagnosis", "section_index", "section_total", "questions"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "state": { "const": "DONE" } },
+        "required": ["state"]
+      },
+      "then": {
+        "required": ["summary"]
+      }
+    }
+  ]
+}
