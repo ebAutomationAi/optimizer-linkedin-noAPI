@@ -247,9 +247,25 @@
         }
       },
       "additionalProperties": false
+    },
+    "section": {
+      "type": "string"
+    },
+    "section_label": {
+      "type": "string"
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "improvement": {
+      "type": "integer"
+    },
+    "chosen": {
+      "type": "string"
     }
   },
-  "additionalProperties": false,
   "allOf": [
     {
       "if": {
