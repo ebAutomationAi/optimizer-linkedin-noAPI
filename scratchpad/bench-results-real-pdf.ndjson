@@ -1,0 +1,2 @@
+{"modelArg":"sonnet-4-6","effortArg":"low","model":"claude-sonnet-4-6","effort":"low","tiempoSegundos":138.5,"palabrasAbout":329,"cumple300":true,"jsonValido":true,"parseError":null,"shapeCompleta":true,"campoFaltante":null,"fallo":null}
+{"modelArg":"haiku-4-5","effortArg":"medium","model":"claude-haiku-4-5","effort":"medium","tiempoSegundos":150.2,"palabrasAbout":491,"cumple300":true,"jsonValido":true,"parseError":null,"shapeCompleta":true,"campoFaltante":null,"fallo":null}

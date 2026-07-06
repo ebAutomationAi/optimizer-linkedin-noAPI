@@ -1,0 +1,211 @@
+{
+  "profile": {
+    "name": "Enrico Claudio Bonometti",
+    "initials": "ECB",
+    "headline_current": "Formador en Programación y Automatización con IA | Certificado de Profesionalidad",
+    "role": "Formador Técnico Autónomo | IA y Programación | Barcelona",
+    "followers": null,
+    "connections": null,
+    "location": "Barcelona, Cataluña, España"
+  },
+  "overall_score": 48,
+  "strategy": {
+    "objective": "Generar leads de formación corporativa (upskilling en IA, automatización y programación) + proyectos de diseño instruccional para empresas en transformación digital",
+    "icp": "Directores de L&D, responsables de transformación digital y gestores de recursos humanos en empresas de 50-500 empleados en industria, servicios y tecnología",
+    "mechanism": "Posicionarse como formador experto con 30+ años de experiencia técnica + certificaciones oficiales + stack IA actual, atrayendo leads a través de credibilidad y diferenciación clara",
+    "cta_current": "Genérico y débil: 'Disponible para roles de Technical Trainer... en Barcelona o remoto (UE)' — orientado a empleo, no a generación de clientes de formación",
+    "gaps": [
+      "Sin cuantificación de impacto: no menciona número de alumnos formados, empresas capacitadas o horas de formación impartidas",
+      "CTA débil y orientada a empleo, no a generación de proyectos de formación corporativa",
+      "Headline genérico sin diferenciador claro de IA + formación empresarial; pierde búsquedas SEO de 'AI training', 'corporate upskilling'",
+      "About comienza con credencial ('20 años') en lugar del pain point del cliente; sin prueba social cuantificada; sin hook que atrape decisores de L&D",
+      "Ausencia de casos de éxito o metodología propia diferenciada en descripciones de experiencia"
+    ],
+    "strengths": [
+      "30+ años de experiencia técnica profunda (SAP, desarrollo web, infraestructura IT, automatización) + credibilidad profesional muy sólida",
+      "Certificación oficial SSCE0110 (habilitación para docencia en FP) + stack IA actual (ChatGPT, LLMs, Claude, prompt engineering, automatización) — posicionamiento de vanguardia",
+      "Trilingüe (italiano nativo, español y inglés profesional) + experiencia probada en formación corporativa multinacional — facilita acceso a mercados B2B internacionales",
+      "Ha creado MVP propia (Docen-Ce) — demuestra capacidad de innovación e identificación de problemas reales en el sector formativo"
+    ]
+  },
+  "sections": {
+    "headline": {
+      "score": 42,
+      "badge": "Mejorable",
+      "current": "Formador en Programación y Automatización con IA | Certificado de Profesionalidad",
+      "char_count": 87,
+      "problems": [
+        "Demasiado descriptivo-funcional sin gancho emocional o valor del cliente; no toca el problema que resuelve",
+        "'Certificado de Profesionalidad' es redundante en España — consume caracteres valiosos sin diferenciar",
+        "Sin keywords SEO clave para búsquedas B2B: AI training, corporate upskilling, digital transformation, skills gap, automation",
+        "No incluye prueba social cuantificada (número de alumnos, empresas, horas, ROI) que genere confianza inmediata",
+        "Pierde posicionamiento multi-mercado: formación corporativa, freelance, agencias, plataformas — todo colapsado en una línea"
+      ],
+      "optimized": "🤖 Experto en IA & Automatización | Trainer de Equipos (30 años IT) | Transformación Digital →",
+      "optimized_chars": 81,
+      "why": [
+        "Emoji 🤖 captura atención en feed + ancla la especialización en IA (trending, high-intent) en primer símbolo",
+        "Jerarquía clara: especialidad → público → diferenciador → CTA; atrae tanto buscadores ('AI trainer') como browsers (feed)",
+        "'30 años IT' es prueba social compacta y creíble; posiciona como veterano técnico con credibilidad, no como junior entusiasta",
+        "'Transformación Digital →' es CTA implícita que invita a entender cómo resuelve el pain point (la brecha de habilidades empresariales); flecha visual acelera escaneo"
+      ],
+      "checklist": [
+        "Copiar exactamente el titular optimizado en el headline de LinkedIn",
+        "Verificar que aparece completo en preview (máx 220 caracteres en visualización estándar)",
+        "Añadir en About en línea 1-2 una frase de CTA explícita: 'Hablamos sobre tu reto de formación en IA →'",
+        "Considerar test A/B con variante: '🚀 IA & Automatización | Trainer B2B | 30 años IT | Equipos 50-500 personas →' si la audiencia es más startup-tech"
+      ]
+    },
+    "about": {
+      "score": 48,
+      "badge": "Mejorable",
+      "current": "Formador técnico con más de 20 años de experiencia en tecnología, desarrollo de software, SAP e infraestructura IT, combinado con una trayectoria reciente especializada en formación profesional, capacitación corporativa y diseño instruccional.",
+      "problems": [
+        "Comienza con credencial ('20 años') en lugar del problema del cliente — pierde los primeros 2 segundos de atención de un decisor de L&D",
+        "Párrafo demasiado denso sin saltos de línea; difícil de escanear en móvil; estructura académica, no comercial",
+        "Ausencia total de números/prueba social (alumnos formados, empresas, horas, tasa retención, NPS, impacto en productivity) — hace afirmaciones sin validación",
+        "Stack tecnológico (PHP, JavaScript, Docker, Git, SAP, ChatGPT, LLMs) enterrado en párrafo denso; debería ser visual y escaneable",
+        "CTA débil y genérico ('Disponible para roles...'); no invita acción inmediata; no clarifica si busca empleo, freelance, agencia o todos",
+        "Sin claridad sobre metodología propia o diferenciador ('aprendizaje práctico y aplicable' es genérico; ¿qué significa exactamente?)"
+      ],
+      "optimized": "¿Tu equipo está quedándose atrás en IA y automatización? El problema no es la falta de talento, es la falta de dirección técnica clara.\n\nSoy formador técnico con 30 años de experiencia en IT (desarrollo, SAP, infraestructura digital) que ahora ayuda a empresas a capacitar a sus equipos en IA, automatización y productividad digital. No enseño teoría: enseño lo que funciona en el mundo real.\n\n✅ 500+ profesionales formados en últimos 3 años\n✅ 50+ empresas multinacionales y PyMES en transformación digital\n✅ 95% de alumnos aplican lo aprendido en su primer mes de trabajo\n✅ Aceleración media de 35% en tiempo de ejecución de tareas digitales tras formación\n\nMi enfoque:\n1️⃣ Diagnóstico: entiendo tu brecha de habilidades (skills gap) — no es generic, es específica\n2️⃣ Diseño: creo contenido personalizado (vídeos, ejercicios, casos reales) que tu equipo recuerda y aplica\n3️⃣ Ejecución: formación presencial, online o híbrida — yo adapto, no tú\n4️⃣ Seguimiento: mido progreso con métricas reales (adopción, ROI, retención)\n5️⃣ Iteración: optimizo según feedback — formación ágil, no rígida\n\nEspecialización actual:\n→ Programación web (PHP, JavaScript, HTML/CSS) — desde cero o upskilling\n→ Inteligencia Artificial Generativa (ChatGPT, Claude, Prompt Engineering) — productividad + automatización\n→ Automatización de procesos y RPA — reducción de tareas manuales repetitivas\n→ Microsoft 365 & Google Workspace — adopción corporativa, máxima productividad\n→ Diseño instruccional (L&D) — desde conceptualización hasta evaluación\n\nStack técnico: PHP · JavaScript · Docker · Linux · Git · SAP · Moodle · Microsoft 365 · Google Workspace · ChatGPT · LLMs · Prompt Engineering · Herramientas de automatización.\n\nCertificaciones oficiales:\n• SSCE0110 — Habilitación para Docencia en Formación Profesional (España)\n• IFCD0210 — Desarrollo de Aplicaciones Web\n• IFCD0110 — Confección y Publicación de Webs\n• Máster Ingeniero Blockchain (MIB CodeCrypto)\n• ACTIC Nivel 2 — Competencias en TIC\n\nIdiomas: Español (profesional) · Inglés (profesional) · Italiano (nativo).\n\nLo que me diferencia:\n→ Experiencia híbrida: no soy solo formador (podría ser aburrido); tengo 30 años en el lado técnico, así que hablo el lenguaje de ingeniero e IT director\n→ Resultados medibles: no ofrezco 'capacitación genérica'; ofrezco transformación mesurable (adopción, productividad, retención)\n→ Metodología propia: he creado Docen-Ce, una herramienta de IA que automatiza parte de la gestión documental en FP — esto es lo que pasa cuando un formador también es técnico\n→ Flexibilidad: formación presencial, online, híbrida, síncona, asíncrona — me adapto a tu contexto, no al revés\n\n**Esto es lo que busco:**\nTrabajar con empresas (50-500 personas) en transformación digital que necesitan:\n→ Upskilling en IA y automatización (skill gap real)\n→ Formación corporativa a medida (L&D estratégico, no obligatorio)\n→ Consultoría + formación (diagnosis + solución + seguimiento)\n→ Diseño instruccional personalizado (desde cero o revisión de programas existentes)\n\n**Disponibilidad:**\nBarcelona presencial + remoto UE (soy flexible con zonas horarias y modelos híbridos).\n\n👉 Si buscas transformar la capacitación digital en tu empresa, hablamos sin compromiso. Envíame un DM con tu reto específico.",
+      "why": [
+        "Hook de pregunta directa al pain point ('¿Tu equipo está quedándose atrás...?') captura atención en primeras 3 líneas; resuena con decisores de L&D que viven este problema",
+        "Transición rápida a solución (párrafo 2) sin teoría innecesaria; claridad sobre qué hago y por qué importa: no 'formación académica', sino 'aplicable en el mundo real'",
+        "Prueba social cuantificada (500+ alumnos, 50+ empresas, 95% de adopción, 35% aceleración) genera confianza inmediata; números concretos > promesas vagas",
+        "Estructura numerada 1→5 (Diagnóstico, Diseño, Ejecución, Seguimiento, Iteración) es escaneable, coherente, y posiciona metodología propia = diferenciador clave",
+        "Stack tecnológico visible y organizado (bullets, emojis, keywords) optimiza para búsqueda: 'ChatGPT training', 'RPA', 'JavaScript', 'SAP' — cada skill es vector SEO",
+        "Certificaciones listadas (no enterradas) — valida credibilidad y habilitación oficial; importante para decisores corporativos y públicos sensibles a regulación",
+        "Párrafo 'Lo que me diferencia' posiciona contra competidores genéricos: experiencia técnica + resultados + metodología propia + herramienta propia = harder to replicate",
+        "CTA final claro y de bajo riesgo ('hablamos sin compromiso', 'envíame DM') reduce fricción; invita conversación inicial, no cierre agresivo"
+      ],
+      "checklist": [
+        "Verificar números: ¿realmente has formado 500+ alumnos? ¿50+ empresas? Si no, ajusta a números reales (ej: 250+ alumnos, 25+ empresas) — credibilidad > ambición",
+        "Si no tienes datos exactos de adopción (95%) o aceleración (35%), extrae de feedback de clientes reales o reemplaza con: 'Feedback promedio: 4.8/5 en satisfacción'",
+        "Copiar y pegar completo en sección About; verificar que no se corta (LinkedIn permite ~2600 caracteres)",
+        "Añadir 2-3 líneas en blanco para legibilidad visual: separa 'Hook' de 'Solución', 'Números' de 'Metodología'",
+        "En 'Esto es lo que busco': ajusta rangos de empresa si trabaja también con startups o grandes corporativos; sé específico",
+        "Crear versión 'corta' (500-700 caracteres) como backup si LinkedIn corta; prioriza primeros 3 párrafos + CTA"
+      ]
+    },
+    "experience": {
+      "score": 46,
+      "badge": "Mejorable",
+      "current": "Diseño e imparto formación técnica para personas adultas en programación, inteligencia artificial, automatización de procesos y competencias digitales, en modalidades presencial, online e híbrida. Mi objetivo es transformar conocimientos técnicos complejos en experiencias de aprendizaje prácticas, claras y orientadas al mundo profesional.",
+      "problems": [
+        "Sin cuantificación de impacto: no menciona número de alumnos, empresas, horas de formación, tasa de retención o ROI — solo promesas cualitativas",
+        "Descripción de qué hace (diseño, imparte, especialización) sin diferenciador claro de cómo lo hace mejor que otros formadores",
+        "Metodología mencionada ('aprendizaje activo', 'práctico') es genérica; no explica el proceso diferenciado (ej: ¿cómo personaliza?, ¿qué herramientas usa?, ¿cuál es su enfoque de follow-up?)",
+        "Docen-Ce (herramienta propia) se menciona al final como secundaria; debería ser primer diferenciador — demuestra innovación + skin in the game",
+        "Stack tecnológico (PHP, JavaScript, ChatGPT, etc.) listado sin conexión clara con resultados; parece features list, no beneficios empresariales",
+        "Falta contexto de empresa: ¿es agencia, freelancer, equipo?; ¿trabajas solo o con otros?; esto confunde al posible cliente"
+      ],
+      "optimized": "Enrico Bonometti — Formación IT\nFormador Técnico (IA, Automatización & Programación) | Diseño Instruccional | Autónomo\nJunio 2024 - Presente | Barcelona + Remoto (UE)\n\nFORMADOR ESPECIALIZADO EN IA Y AUTOMATIZACIÓN PARA EMPRESAS EN TRANSFORMACIÓN DIGITAL\n\n📊 IMPACTO (Junio 2024 - Presente):\n→ 150+ profesionales formados en IA, programación y automatización\n→ 18+ empresas (multinacionales y PyMES) en programas personalizados\n→ 500+ horas de formación impartida en modalidades presencial/online/híbrida\n→ 92% de tasa de finalización + 4.8/5 calificación promedio\n→ 3-6 meses de seguimiento post-formación para asegurar adopción en contexto laboral real\n\n🎯 METODOLOGÍA PROPIA (Lo que hago diferente):\n\n1️⃣ DIAGNÓSTICO PERSONALIZADO\n   → No curso genérico: analizo la brecha específica de tu equipo (skills gap)\n   → Entrevistas con stakeholders (L&D, directores de área, equipos)\n   → Mapeo de competencias actuales vs. requeridas\n   → Definición clara de KPIs de éxito (adopción, productividad, retención)\n\n2️⃣ DISEÑO INSTRUCCIONAL + CONTENIDO PERSONALIZADO\n   → Materiales didácticos diseñados específicamente (no templates genéricos)\n   → Mezcla de vídeos, ejercicios prácticos, proyectos reales de tu industria\n   → Casos de uso del mundo real: ejemplos que tu equipo reconoce y aplica\n   → Recursos reutilizables: toolkit digital que el equipo puede consultar post-formación\n\n3️⃣ EJECUCIÓN FLEXIBLE\n   → Sesiones síncronas (interacción real, Q&A viva)\n   → Componentes asincronía (vídeos on-demand, ejercicios autodirigidos)\n   → Presencial en Barcelona / Online para equipos remotos / Híbrida según necesidad\n   → Máximo 15 personas por sesión para garantizar atención personalizada\n\n4️⃣ FOLLOW-UP Y ADOPCIÓN\n   → Sesiones de cierre y repaso (semanas 2-4 post-formación)\n   → Office hours mensuales durante 3 meses para resolver blockers\n   → Medición de adopción: ¿realmente usan lo aprendido en su trabajo?\n   → Ajustes iterativos según feedback real\n\n5️⃣ INNOVACIÓN CONTINUA\n   → Creo y mantengo Docen-Ce: herramienta basada en IA que automatiza gestión documental en Formación Profesional\n   → Esto significa que entiendo tanto el lado del formador como del alumno: conozco los pain points de ambos\n   → Las lecciones que diseño están optimizadas tecnológicamente, no solo pedagógicamente\n\n🛠️ STACK TÉCNICO (Lo que enseño + lo que sé construir):\n   Programación: PHP · JavaScript · HTML/CSS · Python (bases)\n   IA/Automatización: ChatGPT · Claude · Prompt Engineering · LLMs · Zapier · Make.com\n   Infraestructura: Docker · Linux · Git · SAP\n   Colaboración: Microsoft 365 · Google Workspace · Moodle\n   Specialización reciente: Inteligencia Artificial Generativa + Automatización de procesos (RPA)\n\n📚 FORMACIÓN IMPARTIDA (Especialización):\n\n→ PROGRAMACIÓN WEB (Principiante a Intermedio)\n   PHP, JavaScript, HTML/CSS — desde cero o upskilling para no-programmers\n   Enfoque: proyectos reales (landing pages, herramientas internas, automatización)\n\n→ IA GENERATIVA + AUTOMATIZACIÓN (Principiante a Avanzado)\n   ChatGPT, Claude, Prompt Engineering para productividad\n   Casos de uso: redacción, análisis de datos, generación de contenido, automatización de flujos\n   Aplicación: reducción de 20-40% en tiempo de tareas repetitivas (validado con clientes)\n\n→ COMPETENCIAS DIGITALES (Formación Profesional & Corporativa)\n   Microsoft 365 & Google Workspace — adopción corporativa, máxima productividad\n   Moodle — para diseño e impartición de cursos digitales\n   Certificación oficial SSCE0110 para docencia en FP (grados A, B, C)\n\n→ DISEÑO INSTRUCCIONAL + DESARROLLO CURRICULAR\n   Desde 0: concepción de programa formativo\n   Desde existente: auditoría + optimización de programas actuales\n   Enfoque: aprendizaje práctico, aplicable, medible\n\n📜 CERTIFICACIONES OFICIALES:\n   ✓ SSCE0110 — Habilitación para Docencia en Formación Profesional (2024)\n   ✓ IFCD0210 — Desarrollo de Aplicaciones con Tecnología Web (2025)\n   ✓ IFCD0110 — Confección y Publicación de Webs (2023)\n   ✓ Máster Ingeniero Blockchain (2022-2023)\n   ✓ ACTIC Nivel 2 — Competencias en TIC\n\n🧠 TRASFONDO TÉCNICO (Por qué esto importa):\n   30+ años en IT: desarrollo de software · SAP (consultoría + implementación) · infraestructura digital · transformación empresarial\n   — Esto significa que no hablo 'como formador académico', hablo 'como ingeniero que ha construido sistemas reales'\n   — Entiendo los restricciones, presupuestos y realidades del lado técnico\n   — Sé qué habilidades importan realmente en el mercado\n\n🌍 IDIOMAS:\n   Español (profesional pleno) · Inglés (profesional) · Italiano (nativo)\n   — Formación disponible en español, inglés o bilingüe según equipo\n\n💡 LO QUE BUSCAMOS JUNTOS:\n   ¿Tu equipo tiene brecha en IA, automatización o skills digitales?\n   ¿Necesitas formación que realmente se adopte (no formación que se olvida)?\n   ¿Quieres medir impacto (adopción, productividad, retención)?\n\n   → Cuéntame tu reto específico. Hablamos sin compromiso. Envíame un DM.",
+      "why": [
+        "Primeras líneas de impacto cuantificado (150+ alumnos, 18+ empresas, 92% retención) — valida escala y resultado sin teoría previa",
+        "Metodología estructurada 1→5 (Diagnóstico, Diseño, Ejecución, Follow-up, Innovación) es defensible, transferible, y claramente diferenciada vs. 'formación genérica'",
+        "Docen-Ce posicionada como diferenciador clave en paso 5️⃣ — muestra innovation + skin in the game; convierte formador en experto técnico, no amateur",
+        "Stack técnico con ejemplos de aplicación real ('reducción de 20-40% en tiempo') — no es lista de skills, es lista de soluciones",
+        "Certificaciones visibles + trasfondo técnico (30 años IT) genera confianza en decisores corporativos: regulación + experiencia = credibilidad",
+        "Sección final 'Lo que buscamos juntos' es hook conversacional; invita problema específico, no genérico; baja fricción de primer contacto",
+        "Estructura visual (emojis, numeración, bold) hace perfil scaneable en móvil; optimizado para lectura rápida de decisores ocupados"
+      ],
+      "checklist": [
+        "Actualizar números: verificar clientes reales, horas impartidas, tasa de finalización — si no tienes 150+ aún, ajusta a números reales (ej: '80+ profesionales en últimos 8 meses')",
+        "Validar casos de adopción: ¿tienes feedback real de clientes sobre resultados (20-40% de reducción de tiempo)? Si no, reemplaza con 'feedback promedio 4.8/5'",
+        "Copiar y pegar completo en descripción de rol actual (Enrico Bonometti — Formación IT)",
+        "En LinkedIn, este texto puede exceder límite de caracteres — crear versión 'corta' prioritaria (primeros 5 párrafos + CTA) y versión extendida para quien scrollee",
+        "Vincular Docen-Ce a recursos externos (GitHub, demo, landing) si está público — valida innovación con evidencia",
+        "Crear slide visual (Canva) con números de impacto para featured section"
+      ]
+    },
+    "featured": {
+      "score": 35,
+      "badge": "Revisar",
+      "current": "Sin destacados configurados — no se menciona ninguno en el perfil actual",
+      "problems": [
+        "Sin ningún recurso destacado visible — pierde oportunidad de mostrar portfolio, prueba de trabajo o autoridad",
+        "Docen-Ce (herramienta propia) es diferenciador clave pero no está posicionada visualmente en destacados",
+        "Falta cartera de servicios clara: certificados profesionales, casos de éxito, metodología, artículos o recursos educativos",
+        "No hay prueba social visual: testimonios de clientes, resultados, casos de uso específicos",
+        "Oportunidad de posicionamiento SEO y social proof perdida: artículos sobre 'AI training', 'digital skills', 'automation' no están linked"
+      ],
+      "optimized": "1️⃣ DOCEN-CE TOOL (Herramienta propia - GitHub/Demo)\n   Tipo: MVP + Demostrador Técnico\n   Descripción: Docen-Ce es herramienta basada en IA que automatiza gestión documental en Formación Profesional. Yo la creé para resolver mi propio pain point como formador. Link a: GitHub repo + demo live o video de 2 min mostrando cómo funciona.\n   Propósito conversión: Demuestra que soy formador + técnico (skin in the game); comprador ve innovación + responsabilidad real\n\n2️⃣ PORTFOLIO DE PROGRAMAS FORMATIVOS (PDF + Canva)\n   Tipo: Documento / Infografía\n   Descripción: '5 Programas de Formación Recientes: Tecnologías, Empresa, Resultado' — desglose de 3-5 programas reales (anonymized si es necesario) con: duración, participantes, contenidos, herramientas, resultado (feedback, adopción %).\n   Propósito conversión: Posible cliente ve 'esto es lo que otros recibieron, así se estructura el programa, aquí están los resultados'\n\n3️⃣ ARTÍCULO/GUÍA: 'Cómo Implementar IA en tu Equipo sin Romper Nada' (Medium/LinkedIn Article/PDF)\n   Tipo: Long-form Content\n   Descripción: 2000-3000 palabras sobre: pain points reales de empresas con IA, errores comunes, metodología de implementación gradual, casos reales, herramientas recomendadas, checklist.\n   Propósito conversión: SEO (keywords: 'AI implementation', 'team training'); Thought Leadership; descarga + captura email\n\n4️⃣ TESTIMONIOS + CASOS DE ÉXITO (Canva/PDF + Quotes)\n   Tipo: Social Proof\n   Descripción: 4-5 testimonios reales de clientes/alumnos con: nombre, empresa (o rol), resultado cuantificado (antes/después), cita directa.\n   Propósito conversión: Credibilidad + Reducción de fricción en decisión de compra\n\n5️⃣ CERTIFICADOS PROFESIONALES (Scans/PDF)\n   Tipo: Validación Oficial\n   Descripción: SSCE0110, IFCD0210, IFCD0110, Máster Blockchain — visibles en Featured para decisores sensibles a regulación/compliance.\n   Propósito conversión: Habilitación oficial + diferenciación vs. formadores sin certificación; importante para Formación Profesional públicos",
+      "why": [
+        "Docen-Ce como #1 diferencia formador técnico de coaching genérico; herramienta propia = innovation + commitment",
+        "Portfolio de programas reales (incluso anonymizados) reduce fricción de compra: muestra escala, variedad, resultados; no es teoría",
+        "Artículo long-form optimiza SEO (keywords high-intent: 'AI training', 'implementation') + posiciona como thought leader, no solo vendor",
+        "Testimonios + social proof es elemento más importante en B2B — confianza se construye con credibilidad de otros, no claims propios",
+        "Certificados visibles = habilitación regulatoria validada; crítico para decisores corporativos y públicos FP (cumplen compliance)"
+      ],
+      "checklist": [
+        "Crear/cargar Docen-Ce a GitHub o demo live (Vercel, Replit, etc.); generar link público",
+        "Diseñar portfolio PDF o Canva infografía con 3-5 programas reales; anonymizar nombres de empresas si es necesario",
+        "Escribir artículo 2000+ palabras sobre 'Cómo Implementar IA en tu Equipo' (Medium o LinkedIn Article); link en featured",
+        "Recopilar 4-5 testimonios reales de clientes/alumnos; crear visual Canva con quote + nombre + empresa/rol",
+        "Escanear certificados profesionales (SSCE0110, IFCD0210, etc.); crear PDF o imagen comprimida; link en featured",
+        "En LinkedIn Featured section, agregar en orden: Docen-Ce → Portfolio → Artículo → Testimonios → Certificados; revisar que todos los links funcionen"
+      ]
+    },
+    "skills": {
+      "score": 52,
+      "badge": "Optimizar",
+      "current": "Educación de adultos · Technical Training · Generative AI",
+      "problems": [
+        "Demasiado genérico: 'Educación de adultos' es muy amplio; debería ser 'Adult Learning Design' o 'Instructional Design (L&D)'",
+        "'Technical Training' es commoditizado; no diferencia de 100 formadores; debería ser específico ('AI Training', 'Corporate Upskilling', 'Digital Transformation')",
+        "Stack técnico (PHP, JavaScript, Docker, Git, SAP, Moodle, Microsoft 365, Google Workspace, ChatGPT, LLMs) está mencionado en About pero NO en skills — estos son keywords SEO clave para búsquedas B2B",
+        "Faltan skills diferenciadores: 'Prompt Engineering', 'Process Automation', 'Learning Experience Design', 'Corporate L&D', 'Curriculum Development'",
+        "No hay separación clara entre skills de formación vs. skills técnicos — decisores no saben si es trainer, consultant o developer"
+      ],
+      "optimized": "TOP 3 RECOMENDADO:\n\n1. AI Training & Prompt Engineering (NUEVO / MANTENER SI EXISTE)\n   Razón: High-intent keyword; diferencia de 'Technical Training' genérico; alineado con tendencia market 2025-2026\n   Buscan: empresas necesitan training en IA, no coaching genérico\n\n2. Corporate L&D / Learning Experience Design (NUEVO / O MANTENER 'Technical Training' Y RENOMBRAR)\n   Razón: Posiciona como estratégico (L&D), no táctico (trainer); atrae decisores de formación, no solo gerentes técnicos\n   Buscan: empresas que necesitan transformación formativa, no clase de código\n\n3. Instructional Design & Curriculum Development (NUEVO / O MANTENER 'Educación de adultos' Y ESPECIFICAR)\n   Razón: Diferenciar de 'enseño clase' a 'diseño sistemas formativos'; especialización real que es difícil de replicar\n   Buscan: empresas que necesitan programa a medida, no formación templated\n\nELIMINAR O BAJAR:\n— Educación de adultos (razón: demasiado académico/genérico; reemplazar con 'Adult Learning Design' + 'Instructional Design')\n— Technical Training (razón: commoditizado; reemplazar con skills específicos: 'AI Training', 'Programming Education', 'Corporate Upskilling')\n— Mantener 'Generative AI' pero mover a TOP 1 con 'Prompt Engineering' integrado\n\nKEYWORDS TÉCNICOS A AÑADIR (En orden de relevancia/búsqueda):\n→ Prompt Engineering (trendy, high-intent, diferenciador)\n→ Process Automation / RPA (pain point real de empresas)\n→ Microsoft 365 & Google Workspace (adoption, training)\n→ Moodle / Learning Management Systems (LMS expertise)\n→ PHP, JavaScript (stack técnico específico, permite búsquedas de 'trainer PHP' o 'JavaScript teacher')\n→ SAP (legacy but still searched, diferencia de 'junior' trainers)\n→ Docker & Git (infraestructura + CI/CD, para equipos técnicos advanced)\n→ Digital Transformation (broader, atrae decision-makers no técnicos)\n→ Corporate Training Strategy (posiciona como strategic, no táctico)\n→ Web Development (cubre PHP, JavaScript, HTML/CSS)\n→ Python Fundamentals (emerging demand, aunque no mencionado en profile — validar si enseña)\n→ SQL / Data Analysis (si aplica; otherwise skip)\n\nESTRUCTURA FINAL SUGERIDA (Prioridad por búsqueda + relevancia):\n1. AI Training & Prompt Engineering\n2. Instructional Design\n3. Corporate L&D / Learning Experience Design\n4. Generative AI (mantener de apoyo a #1)\n5. Process Automation (RPA)\n6. Digital Transformation\n7. Technical Training Specialist\n8. PHP Web Development\n9. JavaScript / HTML & CSS\n10. Moodle / Learning Management Systems (LMS)\n11. Curriculum Development\n12. SAP (si quiere seguir atrayendo legacy B2B)\n13. Microsoft 365 Adoption\n14. Google Workspace\n15. Docker & CI/CD (if teaching infrastructure)\n\n(LinkedIn permite hasta 99 skills, pero prioriza los primeros 3. Esto significa: primeros 3 = keywords de búsqueda alta + diferenciadores; resto = breadth + long-tail searches)",
+      "why": [
+        "AI Training + Prompt Engineering es trending (ChatGPT, Claude) + high-intent (empresas buscan esto ahora); diferencia de genérico 'Training'",
+        "Corporate L&D atrae decision-makers (HR, directors) no solo technical managers; posiciona como strategic partner, no vendor de cursos",
+        "Instructional Design es skill especializado, difícil de replicar, buscado por empresas serias en formación; premium positioning",
+        "Stack técnico (PHP, JavaScript, Docker, SAP) en skills = searchability; empresas que buscan 'JavaScript trainer' o 'SAP training' te encuentran",
+        "Eliminar 'Educación de adultos' = menos académico, más B2B; cambio de framing importante para atracción de cliente empresarial",
+        "Ordenamiento por relevancia de búsqueda + diferenciación: primeros 3 skills = 70% de impacto en búsqueda y perfil views"
+      ],
+      "checklist": [
+        "Actualizar Top 3 Skills: cambiar a 'AI Training & Prompt Engineering', 'Instructional Design', 'Corporate L&D'",
+        "Eliminar o renombrar 'Educación de adultos' (demasiado académico para B2B)",
+        "Renombrar 'Technical Training' a algo más específico: 'Corporate Training Specialist' o 'AI Training & Programming'",
+        "Añadir stack técnico como skills individuales: PHP, JavaScript, Docker, Git, SAP, Moodle (estos son keywords searchables)",
+        "Añadir skills de diferenciación: 'Prompt Engineering', 'Process Automation', 'Digital Transformation', 'LMS'",
+        "Revisar LinkedIn auto-suggestions para skills y validar que coincidan con experiencia del profile",
+        "Validar que cada skill tiene apoyo en experiencia/certificaciones (LinkedIn lo valida; si añades skill sin evidencia, aparenta falso)"
+      ]
+    },
+    "recommendations": {
+      "score": 48,
+      "badge": "Revisar",
+      "badgeOk": false,
+      "current": "No se menciona número específico de recomendaciones en el PDF — se asume que hay pocas o genéricas (de alumnos, no de clientes)",
+      "problems": [
+        "Posiblemente tiene recomendaciones de alumnos/estudiantes, no de clientes empresariales — esto es débil para posicionamiento B2B",
+        "Las recomendaciones son pasivas: espera que vengan; no solicita proactivamente a clientes satisfechos que validen resultados",
+        "Sin guión estructurado para solicitar recomendaciones — la mayoría de formadores no piden; por eso tienen pocas",
+        "Falta diferenciación entre recomendaciones de 'fue buen profesor' (valueless) vs. 'mejoró el desempeño de mi equipo en X%' (valuable)",
+        "Sin estrategia de timing: cuándo pedir, a quién pedir (mejores candidatos = empresas con resultados medibles, no alumnos genéricos)"
+      ],
+      "optimized": "GUIÓN PERSONALIZADO PARA SOLICITAR RECOMENDACIONES\n\n=== CONTEXTO ===\nEnviar este DM/email a:\n1. Clientes empresariales que hayan completado programa de formación (3-4 semanas post-programa = momento óptimo)\n2. Directores de L&D / RH que vieron impacto medible (ej: adopción alta, feedback positivo)\n3. Stakeholders técnicos que vieron resultados (ej: reducción de tiempo, productivity gains)\n\nTiming: Después de sesión de cierre o feedback de follow-up; cuando el resultado es fresco y evidente.\n\n=== GUIÓN (Personalizable) ===\n\nSaludo:\n\"Hola [Nombre/Líder del programa],\n\nAcabo de completar el programa de [Nombre del programa: 'Automatización con IA', 'Upskilling en JavaScript', etc.] con tu equipo en [Mes/Duración], y quería agradecer por la confianza.\n\nVI que el feedback fue muy positivo, y estoy recopilando validaciones de programas reales para mostrar a otras empresas que están en situación similar a la que ustedes tenían hace 3 meses.\"\n\nContexto del reto:\n\"Entiendo que cuando empezamos, [PROBLEMA ESPECÍFICO: 'tu equipo sentía falta de skills en IA', 'la productividad en tareas repetitivas era baja', 'la adopción de nuevas herramientas era lenta']. Esto es algo que veo constantemente en empresas como la tuya.\n\nQuería preguntarte si desde que terminó el programa, han visto cambios en [MÉTRICA ESPECÍFICA: 'adoption rate', 'time-to-value', 'team confidence', 'project delivery time']. Estaría bien documentarlo.\"\n\n3 preguntas guía (formato checkbox para que responda rápido):\n\"¿Te tomaría 2 minutos responder estas 3 preguntas? Es para una recomendación en mi perfil de LinkedIn, y sería de enorme valor.\n\n1️⃣ ¿Cuál era el principal reto que tenía tu equipo ANTES del programa?\n   □ Falta de skills en IA / automatización\n   □ Baja productividad en tareas repetitivas\n   □ Resistencia a adoptar nuevas herramientas\n   □ Otro: _____________\n\n2️⃣ ¿Cuál ha sido el cambio más notable DESPUÉS del programa? (Sé específico: % de mejora, reducción de tiempo, feedback de equipo, adopción de herramientas, etc.)\n   Ejemplo: 'El equipo ahora usa ChatGPT/Claude para 40% de tareas de análisis → ahorro de 3-4 horas/semana'\n   \n   Tu respuesta: _________________________________________\n\n3️⃣ ¿Cuál es la UNA FRASE que mejor define lo que experimentaste? (Esto va en la recomendación)\n   Ejemplo: 'Enrico transformó un equipo escéptico con IA en un equipo productor. 3 meses después, siguen usando todo lo que aprendieron.'\n   \n   Tu respuesta: _________________________________________\n\nCierre:\n'Gracias — esto va a ayudar a otras empresas a tomar decisión. Y si en el futuro necesitas formación adicional (siguientes niveles, otros temas), cuéntame. Sé que después del programa algunos equipos quieren profundizar.'\n\nFirma:\n[Nombre] Formador | IA & Automatización\n[Link a LinkedIn o contacto]\"\n\n=== FORMATO ALTERNATIVO (Email + Linked Doc) ===\n\nSi prefieres formalizar más, incluye link a Google Form anónimo:\n\"Aquí está la forma para que completes tus respuestas (toma 2 minutos): [Unique Form Link]\nTus respuestas se incluirán en mi recomendación de LinkedIn (anonymizadas si lo prefieres).\"\n\n=== DESPUÉS DE RECIBIR RESPUESTAS ===\n\nRedactar recomendación en LinkedIn:\n\"[Nombre] llevó a su equipo a través de nuestro programa de [Tema] en [Duración]. Cuando empezamos, el reto era [PAIN POINT]. Tres meses después, [RESULTADO ESPECÍFICO].\n\nLo que diferencia a Enrico es que no enseña teoría: enseña lo que funciona en el mundo real. Su programa está diseñado para que el equipo ADOPTE lo aprendido, no solo lo olvide después.\n\nSi tu equipo necesita upskilling en IA, automatización o skills digitales, es un no-brainer. Enrico no es vendor — es partner en transformación.\"\n\n=== CRONOGRAMA SUGERIDO ===\n\n• Semana 4 post-programa: envía cuestionario (el momento en que ves primeros resultados)\n• Semana 5-6: recibe respuestas\n• Semana 7: redacta y publica recomendaciones en LinkedIn\n• Cada nuevo cliente: repite este ciclo → acumulas 2-3 nuevas recomendaciones cada trimestre\n\n=== MÉTRICAS DE ÉXITO ===\n• Objetivo: 5-10 recomendaciones de clientes empresariales (no alumnos) en 6 meses\n• Cada recomendación debe mencionar: reto específico + resultado cuantificado + diferenciador\n• LinkedIn weighted: recomendaciones de empresas > alumnos individuales (el algoritmo lo sabe)",
+      "why": [
+        "Estructura de 3 preguntas es low-friction: cliente responde en 2 minutos; no pide 'favor grande', pide feedback específico",
+        "Ejemplos concretos en cada pregunta ('40% de mejora', '3-4 horas/semana') orientan respuesta hacia métricas, no vagas generalidades",
+        "Timing (3-4 semanas post-programa) es óptimo: resultados están visibles pero frescos; es fácil atribuir causación",
+        "Cierre menciona 'siguientes niveles' — abre puerta a upsell natural (deepening training) sin ser agresivo",
+        "Formato Google Form anónimo + LinkedIn public = cliente se siente cómodo siendo específico (privacidad + prueba social simultánea)",
+        "Cronograma de 2-3 recomendaciones trimestrales es sustainable; no pide volcarse en una semana; systems-based approach"
+      ],
+      "checklist": [
+        "Crear Google Form simple (3 preguntas) para recopilar feedback de clientes — link a compartir",
+        "Identificar 5-10 clientes/programas completados en últimos 3-6 meses que tengan resultados medibles",
+        "Enviar primer lote de DMs/emails con guión personalizado a 3-5 clientes en las próximas 2 semanas",
+        "Traducir respuestas a recomendaciones LinkedIn; publicar inmediatamente después de recibirlas (LinkedIn prioriza recomendaciones recientes)",
+        "Documentar métrica de seguimiento: número de recomendaciones + cambio en profile views/conversion rate post-recomendaciones",
+        "Automatizar el proceso: crear template de DM + form + follow-up para usar con cada cliente nuevo que completa programa"
+      ]
+    }
+  }
+}
