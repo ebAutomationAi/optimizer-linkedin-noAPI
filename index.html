@@ -1394,33 +1394,33 @@
                 this.setupTabNavigation();
 
                 // ✅ Event listeners para chat
-    const sendBtn = document.getElementById('chat-send-btn');
-    const input = document.getElementById('chat-input');
-    if (sendBtn && input) {
-        sendBtn.addEventListener('click', () => {
-            const message = input.value.trim();
-            if (message) {
-                this.sendChatMessage(message);
-            }
-        });
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                const message = input.value.trim();
-                if (message) {
-                    e.preventDefault();
-                    this.sendChatMessage(message);
+                const sendBtn = document.getElementById('chat-send-btn');
+                const input = document.getElementById('chat-input');
+                if (sendBtn && input) {
+                    sendBtn.addEventListener('click', () => {
+                        const message = input.value.trim();
+                        if (message) {
+                            this.sendChatMessage(message);
+                        }
+                    });
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            const message = input.value.trim();
+                            if (message) {
+                                e.preventDefault();
+                                this.sendChatMessage(message);
+                            }
+                        }
+                    });
                 }
-            }
-        });
-    }
 
-    document.getElementById('btn-restart').addEventListener('click', () => {
-        this.resetApp();
-    });
+                document.getElementById('btn-restart').addEventListener('click', () => {
+                    this.resetApp();
+                });
 
-    // ✅ Verificar si hay sesiones guardadas al cargar
-    this.checkResumeChat();
-},
+                // ✅ Verificar si hay sesiones guardadas al cargar
+                this.checkResumeChat();
+            },
             setupDragAndDrop() {
                 const dropZone = document.getElementById('drop-zone');
                 const fileInput = document.getElementById('file-input');
@@ -1512,6 +1512,17 @@
                 this.currentAnalysisStep = 5;
             },
 
+            resetAnalysisSteps() {
+                this.clearProgressTimers();
+                this.currentAnalysisStep = 0;
+
+                for (let step = 1; step <= 5; step++) {
+                    const stepElement = document.getElementById(`step-${step}`);
+                    if (stepElement) {
+                        stepElement.className = 'analysis-step pending';
+                    }
+                }
+            },
             // El backend solo distingue "leyendo PDF" y "generando respuesta" (la fase larga).
             // Dentro de "generando" no hay eventos intermedios reales, así que esos pasos
             // se van paceando con temporizadores basados en la duración media observada (~150-190s),
@@ -1534,116 +1545,116 @@
             },
 
             async submitToAPI() {
-    // Nota: this.inFlight ya lo marca handleFile() antes de invocar
-    // submitToAPI (necesario para cerrar la ventana de carrera
-    // mientras el FileReader aún está leyendo). submitToAPI solo es
-    // responsable de liberarlo en el finally, no de volver a marcarlo.
-    const errorDiv = document.getElementById('upload-error');
+                // Nota: this.inFlight ya lo marca handleFile() antes de invocar
+                // submitToAPI (necesario para cerrar la ventana de carrera
+                // mientras el FileReader aún está leyendo). submitToAPI solo es
+                // responsable de liberarlo en el finally, no de volver a marcarlo.
+                const errorDiv = document.getElementById('upload-error');
 
-    this.setState('analyzing');
+                this.setState('analyzing');
 
-    // 320s = margen de 20s sobre el TIMEOUT_MS (300000ms) del backend,
-    // para no abortar en el cliente antes de que el propio servidor
-    // tenga oportunidad de responder con su propio error de timeout.
-    const CLIENT_TIMEOUT_MS = 320000;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
+                // 320s = margen de 20s sobre el TIMEOUT_MS (300000ms) del backend,
+                // para no abortar en el cliente antes de que el propio servidor
+                // tenga oportunidad de responder con su propio error de timeout.
+                const CLIENT_TIMEOUT_MS = 320000;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
 
-    try {
-        const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/analyze`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+                try {
+                    const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/analyze`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            base64Data: this.state.base64Data // ✅ Usar this.state.base64Data
+                        }),
+                        signal: controller.signal
+                    });
+
+                    if (!response.ok) {
+                        let message = `Error del servidor (status ${response.status})`;
+                        try {
+                            const errData = await response.json();
+                            message = errData.error || message;
+                        } catch { }
+                        throw new Error(message);
+                    }
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    let finalData = null;
+                    let serverError = null;
+
+                    const processLine = (line) => {
+                        if (!line.trim()) return;
+                        let evt;
+                        try {
+                            evt = JSON.parse(line);
+                        } catch (parseErr) {
+                            console.warn('[optimizer] línea NDJSON inválida descartada:', line);
+                            return;
+                        }
+                        if (evt.type === 'progress') {
+                            this.handleProgressEvent(evt);
+                        } else if (evt.type === 'done') {
+                            finalData = evt.data;
+                        } else if (evt.type === 'error') {
+                            serverError = evt.message;
+                        }
+                    };
+
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop();
+                        lines.forEach(processLine);
+                    }
+
+                    if (buffer.trim()) {
+                        processLine(buffer);
+                    }
+
+                    if (serverError) {
+                        throw new Error(serverError);
+                    }
+                    if (!finalData) {
+                        throw new Error('El servidor no devolvió resultados.');
+                    }
+
+                    const missingField = this.validateApiShape(finalData);
+                    if (missingField) {
+                        throw new Error(`Respuesta del servidor incompleta: falta ${missingField}`);
+                    }
+
+                    this.completeAllSteps();
+                    this.apiData = finalData;
+
+                    this.populateResults();
+                    this.setState('results');
+
+                } catch (err) {
+                    this.clearProgressTimers();
+                    this.setState('upload');
+                    if (err.name === 'AbortError') {
+                        console.warn('[optimizer] fetch abortado por timeout 320s');
+                        errorDiv.innerText = `El análisis ha tardado más de ${CLIENT_TIMEOUT_MS / 1000}s y se ha cancelado. Inténtalo de nuevo.`;
+                    } else {
+                        errorDiv.innerText = `Ha ocurrido un error en la llamada: ${err.message}`;
+                    }
+                    errorDiv.style.display = 'block';
+                } finally {
+                    clearTimeout(timeoutId);
+                    this.inFlight = false;
+                }
             },
-            body: JSON.stringify({
-                base64Data: this.state.base64Data // ✅ Usar this.state.base64Data
-            }),
-            signal: controller.signal
-        });
-
-        if (!response.ok) {
-            let message = `Error del servidor (status ${response.status})`;
-            try {
-                const errData = await response.json();
-                message = errData.error || message;
-            } catch {}
-            throw new Error(message);
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let finalData = null;
-        let serverError = null;
-
-        const processLine = (line) => {
-            if (!line.trim()) return;
-            let evt;
-            try {
-                evt = JSON.parse(line);
-            } catch (parseErr) {
-                console.warn('[optimizer] línea NDJSON inválida descartada:', line);
-                return;
-            }
-            if (evt.type === 'progress') {
-                this.handleProgressEvent(evt);
-            } else if (evt.type === 'done') {
-                finalData = evt.data;
-            } else if (evt.type === 'error') {
-                serverError = evt.message;
-            }
-        };
-
-        while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop();
-            lines.forEach(processLine);
-        }
-
-        if (buffer.trim()) {
-            processLine(buffer);
-        }
-
-        if (serverError) {
-            throw new Error(serverError);
-        }
-        if (!finalData) {
-            throw new Error('El servidor no devolvió resultados.');
-        }
-
-        const missingField = this.validateApiShape(finalData);
-        if (missingField) {
-            throw new Error(`Respuesta del servidor incompleta: falta ${missingField}`);
-        }
-
-        this.completeAllSteps();
-        this.apiData = finalData;
-
-        this.populateResults();
-        this.setState('results');
-
-    } catch (err) {
-        this.clearProgressTimers();
-        this.setState('upload');
-        if (err.name === 'AbortError') {
-            console.warn('[optimizer] fetch abortado por timeout 320s');
-            errorDiv.innerText = `El análisis ha tardado más de ${CLIENT_TIMEOUT_MS / 1000}s y se ha cancelado. Inténtalo de nuevo.`;
-        } else {
-            errorDiv.innerText = `Ha ocurrido un error en la llamada: ${err.message}`;
-        }
-        errorDiv.style.display = 'block';
-    } finally {
-        clearTimeout(timeoutId);
-        this.inFlight = false;
-    }
-},
 
             // ✅ Nueva función para enviar a /api/chat
             submitToChat: async function (base64Data) {
-                this.setState('analyzing'); 
+                this.setState('analyzing');
                 try {
                     const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/chat`, {
                         method: 'POST',
@@ -2318,43 +2329,43 @@
             },
 
             // ✅ Función para verificar sesiones guardadas
-checkResumeChat: function() {
-    const chatKeys = Object.keys(sessionStorage).filter(key => key.startsWith('chat-'));
-    const container = document.createElement('div');
-    container.id = 'resume-chat-container';
-    container.style.marginTop = '20px';
+            checkResumeChat: function () {
+                const chatKeys = Object.keys(sessionStorage).filter(key => key.startsWith('chat-'));
+                const container = document.createElement('div');
+                container.id = 'resume-chat-container';
+                container.style.marginTop = '20px';
 
-    if (chatKeys.length > 0) {
-        container.innerHTML = `
+                if (chatKeys.length > 0) {
+                    container.innerHTML = `
             <button class="btn-nav-next" onclick="app.resumeChat()">Reanudar sesión de chat guardada</button>
         `;
-        const uploadContainer = document.querySelector('.upload-container');
-        if (uploadContainer) {
-            uploadContainer.appendChild(container);
-        }
-    }
-},
-// ✅ Función para reanudar chat
-resumeChat: function() {
-    const chatKeys = Object.keys(sessionStorage).filter(key => key.startsWith('chat-'));
-    if (chatKeys.length === 0) return;
+                    const uploadContainer = document.querySelector('.upload-container');
+                    if (uploadContainer) {
+                        uploadContainer.appendChild(container);
+                    }
+                }
+            },
+            // ✅ Función para reanudar chat
+            resumeChat: function () {
+                const chatKeys = Object.keys(sessionStorage).filter(key => key.startsWith('chat-'));
+                if (chatKeys.length === 0) return;
 
-    const conversationId = chatKeys[0].split('-')[1];
-    this.state.conversationId = conversationId;
-    this.setState('chat');
-},
+                const conversationId = chatKeys[0].split('-')[1];
+                this.state.conversationId = conversationId;
+                this.setState('chat');
+            },
 
-// ✅ Función para mostrar errores
-showError: function(message) {
-    const errorDiv = document.getElementById('upload-error');
-    errorDiv.textContent = message;
-    errorDiv.style.display = 'block';
-},
+            // ✅ Función para mostrar errores
+            showError: function (message) {
+                const errorDiv = document.getElementById('upload-error');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            },
 
 
         };
 
-        
+
         window.addEventListener('DOMContentLoaded', () => {
             app.init();
         });
