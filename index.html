@@ -1373,7 +1373,7 @@
         // navegador (útil cuando el frontend se sirve desde otra máquina de la LAN y
         // server.js corre en el Orange Pi u otro host). Sin inyección, cae al default
         // para desarrollo local en la misma máquina que server.js.
-        const OPTIMIZER_BACKEND_URL = window.OPTIMIZER_BACKEND_URL || 'http://localhost:3001';
+        const OPTIMIZER_BACKEND_URL = window.OPTIMIZER_BACKEND_URL || 'http://localhost:3099';
 
         // ✅ Flag para alternar entre /api/analyze (legado) y /api/chat (nuevo)
         const USE_LEGACY_ANALYZE = false; // Cambiar a true para usar el flujo antiguo
@@ -1453,7 +1453,8 @@
             },
 
             handleFile(file) {
-                if (this.inFlight) return; // ✅ Usar this.inFlight
+                if (this.inFlight) return;
+                this.inFlight = true;
 
                 const errorDiv = document.getElementById('upload-error');
                 errorDiv.style.display = 'none';
@@ -1469,8 +1470,6 @@
                     errorDiv.style.display = 'block';
                     return;
                 }
-
-                this.inFlight = true; // ✅ Marcar como en vuelo
 
                 const reader = new FileReader();
                 reader.onload = () => {
@@ -1654,6 +1653,11 @@
 
             // ✅ Nueva función para enviar a /api/chat
             submitToChat: async function (base64Data) {
+                if (this.inFlight && this.state.currentScreen !== 'analyzing') {
+                    console.warn('[optimizer] submitToChat duplicado ignorado');
+                    return;
+                }
+
                 this.setState('analyzing');
                 try {
                     const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/chat`, {
