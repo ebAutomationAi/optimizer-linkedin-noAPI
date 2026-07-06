@@ -434,8 +434,7 @@ app.post('/api/chat', async (req, res) => {
             cwd = tmpDir;
             timeoutMs = 300000;
 
-            const firstTurnPrompt = `Read the PDF at ${pdfPath} once with the Read tool and produce the DIAGNOSIS
-turn as JSON.`;
+            const firstTurnPrompt = `Read the PDF at ${pdfPath} once with the Read tool and produce the DIAGNOSIS turn as JSON.`;
 
             args = [
                 '-p', firstTurnPrompt,
