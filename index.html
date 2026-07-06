@@ -894,7 +894,7 @@
 
         .chat-alternatives {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 12px;
             margin-top: 12px;
         }
@@ -957,6 +957,28 @@
         .chat-quick-action-btn:hover {
             background-color: #f0f6ff;
             color: #1a1a18;
+        }
+
+        .chat-questions {
+            margin-top: 12px;
+            padding: 12px 14px;
+            background: #f7f7f5;
+            border-radius: 8px;
+            border-left: 2px solid #0A66C2;
+        }
+
+        .chat-questions p {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a18;
+        }
+
+        .chat-questions-item {
+            font-size: 13px;
+            color: #6b6b68;
+            line-height: 1.5;
+            padding: 3px 0;
         }
     </style>
 </head>
@@ -1399,22 +1421,6 @@
     // ✅ Verificar si hay sesiones guardadas al cargar
     this.checkResumeChat();
 },
-            // ✅ Modificar setState para manejar el objeto state.currentScreen
-            setState(newState) {
-                this.state.currentScreen = newState;
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById(`${newState}-screen`).classList.add('active');
-
-                if (newState === 'analyzing') {
-                    this.resetAnalysisSteps();
-                }
-                // ✅ Reiniciar input de chat al salir de la pantalla
-                if (newState !== 'chat') {
-                    const input = document.getElementById('chat-input');
-                    if (input) input.value = '';
-                }
-            },
-
             setupDragAndDrop() {
                 const dropZone = document.getElementById('drop-zone');
                 const fileInput = document.getElementById('file-input');
@@ -1711,6 +1717,10 @@
                 }
                 else if (event.type === 'turn') {
                     this.renderTurn(event.data);
+                    sessionStorage.setItem(
+                        `chat-turn-${this.state.conversationId}-${event.data.state}`,
+                        JSON.stringify(event.data)
+                    );
                 }
                 else if (event.type === 'error') {
                     this.setState('upload');
@@ -2310,17 +2320,6 @@
                 });
             },
 
-            resetApp() {
-                Object.keys(sessionStorage)
-                    .filter(k => k.startsWith('chk-'))
-                    .forEach(k => sessionStorage.removeItem(k));
-                this.base64Data = null;
-                this.apiData = null;
-                this.totalCheckboxes = 0;
-                document.getElementById('file-input').value = '';
-                document.getElementById('upload-error').style.display = 'none';
-                this.setState('upload');
-            },
             // ✅ Función para verificar sesiones guardadas
 checkResumeChat: function() {
     const chatKeys = Object.keys(sessionStorage).filter(key => key.startsWith('chat-'));
