@@ -178,7 +178,7 @@
         "required": ["state"]
       },
       "then": {
-        "required": ["alternatives", "diagnosis", "section_index", "section_total", "questions"]
+        "required": ["alternatives", "section_index", "section_total", "questions"]
       }
     },
     {
