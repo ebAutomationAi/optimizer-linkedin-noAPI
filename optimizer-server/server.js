@@ -5,6 +5,8 @@ const readline = require('readline');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const crypto = require('crypto');
+const Ajv = require('ajv');
 
 const app = express();
 app.use(cors());
@@ -107,6 +109,28 @@ const DISALLOWED_TOOLS = [
     'ScheduleWakeup', 'TaskOutput', 'TaskStop', 'ReportFindings'
 ].join(',');
 
+const DISALLOWED_TOOLS_RESUME = DISALLOWED_TOOLS + ',Read';
+
+const ajv = new Ajv({ strict: false });
+
+const COACH_SYSTEM_PROMPT = fs.readFileSync(path.join(__dirname, 'prompts', 'coach-system-prompt.md'), 'utf8');
+
+const coachTurnSchema = JSON.parse(fs.readFileSync(path.join(__dirname, 'schemas', 'coach-turn.schema.json'), 'utf8'));
+const validateCoachTurn = ajv.compile(coachTurnSchema);
+
+const conversations = new Map();
+
+setInterval(() => {
+    const now = Date.now();
+    for (const [conversationId, entry] of conversations.entries()) {
+        if (now - entry.lastUsedAt > 30 * 60 * 1000) {
+            conversations.delete(conversationId);
+            fs.rmSync(entry.cwd, { recursive: true, force: true });
+            console.log('[chat] session expired and cleaned:', conversationId);
+        }
+    }
+}, 5 * 60 * 1000);
+
 function runClaude(pdfPath, onProgress) {
     const prompt = `Lee el archivo PDF en "${pdfPath}" con la herramienta Read UNA SOLA VEZ (no lo releas ni pidas páginas adicionales) y analiza el perfil de LinkedIn que contiene. No tienes acceso a herramientas de terminal: cuenta caracteres y palabras mentalmente, sin ejecutar comandos. En cuanto tengas el contenido del PDF, escribe directamente el JSON final sin pasos intermedios.\n\n${PROMPT_TEMPLATE}`;
 
@@ -199,6 +223,127 @@ function runClaude(pdfPath, onProgress) {
     });
 }
 
+function runCoachTurn(args, cwd, timeoutMs, onProgress) {
+    const childEnv = { ...process.env };
+    delete childEnv.ANTHROPIC_API_KEY;
+    delete childEnv.ANTHROPIC_AUTH_TOKEN;
+
+    return new Promise((resolve, reject) => {
+        const child = spawn('claude', args, { cwd, env: childEnv });
+
+        let finalEvent = null;
+        let stderrBuf = '';
+        let settled = false;
+
+        const timer = setTimeout(() => {
+            if (settled) return;
+            settled = true;
+            child.kill('SIGKILL');
+            reject(new Error(`Timeout: Claude Code no terminó en ${timeoutMs / 1000}s, se ha detenido el proceso.`));
+        }, timeoutMs);
+
+        const rl = readline.createInterface({ input: child.stdout });
+
+        rl.on('line', (line) => {
+            if (!line.trim()) return;
+            let event;
+            try {
+                event = JSON.parse(line);
+            } catch {
+                return;
+            }
+
+            if (event.type === 'assistant') {
+                for (const block of event.message?.content || []) {
+                    if (block.type === 'tool_use') {
+                        onProgress?.({ step: 'reading_pdf' });
+                    } else if (block.type === 'text' && block.text) {
+                        onProgress?.({ step: 'generating' });
+                    }
+                }
+            } else if (event.type === 'result') {
+                finalEvent = event;
+            }
+        });
+
+        child.stderr.on('data', (d) => {
+            stderrBuf += d.toString();
+        });
+
+        child.on('close', (code) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+
+            if (!finalEvent) {
+                return reject(new Error(stderrBuf || `Claude Code terminó con código ${code} sin devolver resultado.`));
+            }
+            if (finalEvent.is_error) {
+                return reject(new Error(finalEvent.result || 'Error ejecutando Claude Code'));
+            }
+            resolve(finalEvent.result);
+        });
+
+        child.on('error', (err) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            reject(err);
+        });
+    });
+}
+
+async function resolveCoachTurn(resultText, sessionId, cwd, send) {
+    const rawText = resultText.replace(/```json|```/g, '').trim();
+
+    let parsed;
+    let parseError = null;
+    try {
+        parsed = JSON.parse(rawText);
+    } catch (err) {
+        parseError = err;
+    }
+
+    if (!parseError && validateCoachTurn(parsed)) {
+        return parsed;
+    }
+
+    send({ type: 'progress', step: 'retry_schema' });
+
+    const retryPrompt = parseError
+        ? 'Your previous response was not valid JSON. Return ONLY the JSON object matching the coach turn schema. No markdown, no backticks.'
+        : 'Your previous response did not match the required schema. Return ONLY valid JSON. Errors: ' + JSON.stringify(validateCoachTurn.errors);
+
+    const retryArgs = [
+        '-p', retryPrompt,
+        '--resume', sessionId,
+        '--model', 'claude-sonnet-4-6',
+        '--effort', 'low',
+        '--output-format', 'stream-json',
+        '--verbose',
+        '--setting-sources', '',
+        '--disallowedTools', DISALLOWED_TOOLS_RESUME
+    ];
+
+    const retryResultText = await runCoachTurn(retryArgs, cwd, 60000, (progress) => send({ type: 'progress', ...progress }));
+    const retryRaw = retryResultText.replace(/```json|```/g, '').trim();
+
+    let retryParsed;
+    let retryParseError = null;
+    try {
+        retryParsed = JSON.parse(retryRaw);
+    } catch (err) {
+        retryParseError = err;
+    }
+
+    if (retryParseError || !validateCoachTurn(retryParsed)) {
+        send({ type: 'error', code: 'schema_violation', message: JSON.stringify(validateCoachTurn.errors) });
+        return null;
+    }
+
+    return retryParsed;
+}
+
 app.post('/api/analyze', async (req, res) => {
     const { base64Data } = req.body;
 
@@ -235,6 +380,112 @@ app.post('/api/analyze', async (req, res) => {
         res.end();
     }
 });
+
+app.post('/api/chat', async (req, res) => {
+    const { conversationId, base64Data, userMessage } = req.body;
+
+    const isFirstTurn = !conversationId;
+
+    if (isFirstTurn && !base64Data) {
+        return res.status(400).json({ error: 'Missing base64Data' });
+    }
+
+    let entry = null;
+    if (!isFirstTurn) {
+        entry = conversations.get(conversationId);
+        if (entry && !userMessage) {
+            return res.status(400).json({ error: 'Missing userMessage' });
+        }
+    }
+
+    console.log(`[chat] petición recibida (${isFirstTurn ? 'first turn' : `resume ${conversationId}`})`);
+
+    res.writeHead(200, {
+        'Content-Type': 'application/x-ndjson',
+        'Cache-Control': 'no-cache',
+        'X-Accel-Buffering': 'no'
+    });
+
+    const send = (obj) => res.write(`${JSON.stringify(obj)}\n`);
+
+    try {
+        if (!isFirstTurn && !entry) {
+            send({ type: 'error', code: 'conversation_expired', message: 'Session not found or expired. Please start over.' });
+            return;
+        }
+
+        let sessionId, cwd, args, timeoutMs;
+
+        if (isFirstTurn) {
+            const newConversationId = crypto.randomUUID();
+            sessionId = crypto.randomUUID();
+            const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coach-'));
+            const pdfPath = path.join(tmpDir, 'perfil.pdf');
+            fs.writeFileSync(pdfPath, Buffer.from(base64Data, 'base64'));
+
+            conversations.set(newConversationId, {
+                sessionId,
+                cwd: tmpDir,
+                pdfPath,
+                createdAt: Date.now(),
+                lastUsedAt: Date.now()
+            });
+
+            cwd = tmpDir;
+            timeoutMs = 300000;
+
+            const firstTurnPrompt = `Read the PDF at ${pdfPath} once with the Read tool and produce the DIAGNOSIS
+turn as JSON.`;
+
+            args = [
+                '-p', firstTurnPrompt,
+                '--session-id', sessionId,
+                '--system-prompt', COACH_SYSTEM_PROMPT,
+                '--model', 'claude-sonnet-4-6',
+                '--effort', 'low',
+                '--output-format', 'stream-json',
+                '--verbose',
+                '--setting-sources', '',
+                '--disallowedTools', DISALLOWED_TOOLS,
+                '--add-dir', tmpDir
+            ];
+
+            send({ type: 'meta', conversationId: newConversationId, sessionId });
+        } else {
+            entry.lastUsedAt = Date.now();
+            sessionId = entry.sessionId;
+            cwd = entry.cwd;
+            timeoutMs = 60000;
+
+            args = [
+                '-p', userMessage,
+                '--resume', sessionId,
+                '--model', 'claude-sonnet-4-6',
+                '--effort', 'low',
+                '--output-format', 'stream-json',
+                '--verbose',
+                '--setting-sources', '',
+                '--disallowedTools', DISALLOWED_TOOLS_RESUME
+            ];
+        }
+
+        const resultText = await runCoachTurn(args, cwd, timeoutMs, (progress) => send({ 
+            type: 'progress', ...progress }));
+        const turn = await resolveCoachTurn(resultText, sessionId, cwd, send);
+
+        if (turn) {
+            send({ type: 'turn', data: turn });
+        }
+
+        console.log(`[chat] turno completado (${isFirstTurn ? 'first turn' : `resume ${conversationId}`})`);
+    } catch (err) {
+        console.error(`[chat] error: ${err.message}`);
+        send({ type: 'error', code: 'cli_error', message: err.message });
+    } finally {
+        res.end();
+    }
+});
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
