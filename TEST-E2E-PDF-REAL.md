@@ -45,4 +45,4 @@ NDJSON completo aguantan un PDF de perfil LinkedIn exportado real.
   `server.js`, fuera del alcance de esta auditoría.
 
 ## Estado
-Pendiente. Bloqueado hasta que el usuario proporcione el PDF real.
+Completado. Ejecutado el 2026-07-06 con linkedin-real.pdf. Duración: 142s. Todos los criterios superados.
