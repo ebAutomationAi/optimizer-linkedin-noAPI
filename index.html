@@ -1643,8 +1643,7 @@
 
             // ✅ Nueva función para enviar a /api/chat
             submitToChat: async function (base64Data) {
-                this.setState('analyzing'); // ✅ Mostrar pantalla de análisis
-
+                this.setState('analyzing'); 
                 try {
                     const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/chat`, {
                         method: 'POST',
@@ -1659,15 +1658,15 @@
                     // ✅ Parser NDJSON (igual que en submitToAPI)
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
-                    let buffer = '';
+                    let leftoverBuffer = '';
 
                     while (true) {
                         const { value, done } = await reader.read();
                         if (done) break;
-                        buffer += decoder.decode(value, { stream: true });
+                        leftoverBuffer += decoder.decode(value, { stream: true });
 
-                        const lines = buffer.split('\n');
-                        buffer = lines.pop();
+                        const lines = leftoverBuffer.split('\n');
+                        leftoverBuffer = lines.pop();
 
                         for (const line of lines) {
                             if (!line.trim()) continue;
@@ -1680,12 +1679,12 @@
                         }
                     }
 
-                    if (buffer.trim()) {
+                    if (leftoverBuffer.trim()) {
                         try {
-                            const event = JSON.parse(buffer);
+                            const event = JSON.parse(leftoverBuffer);
                             this.handleChatEvent(event);
                         } catch (e) {
-                            console.warn('[optimizer] línea NDJSON final inválida:', buffer);
+                            console.warn('[optimizer] línea NDJSON final inválida:', leftoverBuffer);
                         }
                     }
 
@@ -1965,15 +1964,15 @@
                     // ✅ Parser NDJSON (igual que en submitToAPI)
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
-                    let buffer = '';
+                    let leftoverBuffer = '';
 
                     while (true) {
                         const { value, done } = await reader.read();
                         if (done) break;
-                        buffer += decoder.decode(value, { stream: true });
+                        leftoverBuffer += decoder.decode(value, { stream: true });
 
-                        const lines = buffer.split('\n');
-                        buffer = lines.pop();
+                        const lines = leftoverBuffer.split('\n');
+                        leftoverBuffer = lines.pop();
 
                         for (const line of lines) {
                             if (!line.trim()) continue;
@@ -1986,12 +1985,12 @@
                         }
                     }
 
-                    if (buffer.trim()) {
+                    if (leftoverBuffer.trim()) {
                         try {
-                            const event = JSON.parse(buffer);
+                            const event = JSON.parse(leftoverBuffer);
                             this.handleChatEvent(event);
                         } catch (e) {
-                            console.warn('[optimizer] línea NDJSON final inválida:', buffer);
+                            console.warn('[optimizer] línea NDJSON final inválida:', leftoverBuffer);
                         }
                     }
 
