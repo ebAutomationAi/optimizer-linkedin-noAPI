@@ -3,3 +3,4 @@ node_modules/
 *.log
 .claude/
 test-fixtures/
+!test-fixtures/*.mjs
