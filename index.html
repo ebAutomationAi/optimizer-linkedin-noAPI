@@ -1025,6 +1025,11 @@
     </main>
 
     <script>
+        // URL del backend Optimizer. Configurable en tiempo de carga inyectando
+        // `window.OPTIMIZER_BACKEND_URL` desde un <script> previo o desde consola del
+        // navegador (útil cuando el frontend se sirve desde otra máquina de la LAN y
+        // server.js corre en el Orange Pi u otro host). Sin inyección, cae al default
+        // para desarrollo local en la misma máquina que server.js.
         const OPTIMIZER_BACKEND_URL = window.OPTIMIZER_BACKEND_URL || 'http://localhost:3001';
 
         const app = {
