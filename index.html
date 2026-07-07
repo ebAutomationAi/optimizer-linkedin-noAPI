@@ -1373,7 +1373,7 @@
         // navegador (útil cuando el frontend se sirve desde otra máquina de la LAN y
         // server.js corre en el Orange Pi u otro host). Sin inyección, cae al default
         // para desarrollo local en la misma máquina que server.js.
-        const OPTIMIZER_BACKEND_URL = window.OPTIMIZER_BACKEND_URL || 'http://localhost:3099';
+        const OPTIMIZER_BACKEND_URL = window.OPTIMIZER_BACKEND_URL || 'http://localhost:3001';
 
         // ✅ Flag para alternar entre /api/analyze (legado) y /api/chat (nuevo)
         const USE_LEGACY_ANALYZE = false; // Cambiar a true para usar el flujo antiguo
@@ -1452,52 +1452,52 @@
                 });
             },
 
-            
-handleFileInProgress: false,
 
-handleFile(file) {
-    // ✅ Guard específico para handleFile
-    if (this.handleFileInProgress) {
-        console.warn('[optimizer] handleFile duplicado ignorado');
-        return;
-    }
-    this.handleFileInProgress = true;
+            handleFileInProgress: false,
 
-    const errorDiv = document.getElementById('upload-error');
-    errorDiv.style.display = 'none';
+            handleFile(file) {
+                // ✅ Guard específico para handleFile
+                if (this.handleFileInProgress) {
+                    console.warn('[optimizer] handleFile duplicado ignorado');
+                    return;
+                }
+                this.handleFileInProgress = true;
 
-    if (file.type !== 'application/pdf') {
-        this.handleFileInProgress = false;
-        errorDiv.innerText = 'Error: El archivo debe ser un documento PDF.';
-        errorDiv.style.display = 'block';
-        return;
-    }
+                const errorDiv = document.getElementById('upload-error');
+                errorDiv.style.display = 'none';
 
-    if (file.size > 5 * 1024 * 1024) {
-        this.handleFileInProgress = false;
-        errorDiv.innerText = 'Error: El tamaño del archivo supera el límite de 5 MB.';
-        errorDiv.style.display = 'block';
-        return;
-    }
+                if (file.type !== 'application/pdf') {
+                    this.handleFileInProgress = false;
+                    errorDiv.innerText = 'Error: El archivo debe ser un documento PDF.';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-        this.state.base64Data = reader.result.split(',')[1];
-        this.handleFileInProgress = false; // ✅ Resetear aquí
-        
-        if (USE_LEGACY_ANALYZE) {
-            this.submitToAPI();
-        } else {
-            this.submitToChat(this.state.base64Data);
-        }
-    };
-    reader.onerror = () => {
-        this.handleFileInProgress = false;
-        errorDiv.innerText = 'Error al leer el archivo PDF.';
-        errorDiv.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-},
+                if (file.size > 5 * 1024 * 1024) {
+                    this.handleFileInProgress = false;
+                    errorDiv.innerText = 'Error: El tamaño del archivo supera el límite de 5 MB.';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    this.state.base64Data = reader.result.split(',')[1];
+                    this.handleFileInProgress = false; // ✅ Resetear aquí
+
+                    if (USE_LEGACY_ANALYZE) {
+                        this.submitToAPI();
+                    } else {
+                        this.submitToChat(this.state.base64Data);
+                    }
+                };
+                reader.onerror = () => {
+                    this.handleFileInProgress = false;
+                    errorDiv.innerText = 'Error al leer el archivo PDF.';
+                    errorDiv.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            },
 
 
             clearProgressTimers() {
@@ -1533,26 +1533,78 @@ handleFile(file) {
                         stepElement.className = 'analysis-step pending';
                     }
                 }
+                this._stepQueue = [];
+                this._stepQueueRunning = false;
+                this._pendingProfile = null;
             },
             // El backend solo distingue "leyendo PDF" y "generando respuesta" (la fase larga).
             // Dentro de "generando" no hay eventos intermedios reales, así que esos pasos
             // se van paceando con temporizadores basados en la duración media observada (~150-190s),
             // pero nunca se marcan como completados salvo que llegue el evento 'done' real.
-            handleProgressEvent(evt) {
-                if (evt.step === 'started' || evt.step === 'reading_pdf') {
-                    this.advanceToStep(1);
-                } else if (evt.step === 'tool_result') {
-                    this.advanceToStep(2);
-                } else if (evt.step === 'generating') {
-                    this.advanceToStep(2);
-                    if (!this.progressTimers || this.progressTimers.length === 0) {
-                        this.progressTimers = [
-                            setTimeout(() => this.advanceToStep(3), 35000),
-                            setTimeout(() => this.advanceToStep(4), 65000),
-                            setTimeout(() => this.advanceToStep(5), 95000),
-                        ];
-                    }
+            handleProgressEvent: function (evt) {
+                const stepMap = {
+                    'started': 1,
+                    'reading_pdf': 1,
+                    'tool_result': 2,
+                    'generating': 2,
+                };
+
+                const targetStep = stepMap[evt.step];
+                if (!targetStep) return;
+
+                // Queue-based advancement: never skip a step, minimum 1200ms per step
+                if (!this._stepQueue) this._stepQueue = [];
+
+                // Only enqueue if this step is higher than what we've already queued
+                const lastQueued = this._stepQueue.length > 0
+                    ? this._stepQueue[this._stepQueue.length - 1]
+                    : (this.currentAnalysisStep || 0);
+
+                for (let s = lastQueued + 1; s <= targetStep; s++) {
+                    this._stepQueue.push(s);
                 }
+
+                if (!this._stepQueueRunning) {
+                    this._drainStepQueue();
+                }
+
+                // For 'generating', also schedule steps 3-5 at realistic intervals
+                if (evt.step === 'generating' && (!this.progressTimers || this.progressTimers.length === 0)) {
+                    this.progressTimers = [
+                        setTimeout(() => {
+                            this._stepQueue.push(3);
+                            if (!this._stepQueueRunning) this._drainStepQueue();
+                        }, 30000),
+                        setTimeout(() => {
+                            this._stepQueue.push(4);
+                            if (!this._stepQueueRunning) this._drainStepQueue();
+                        }, 65000),
+                        setTimeout(() => {
+                            this._stepQueue.push(5);
+                            if (!this._stepQueueRunning) this._drainStepQueue();
+                        }, 100000),
+                    ];
+                }
+            },
+
+            _drainStepQueue: function () {
+                if (!this._stepQueue || this._stepQueue.length === 0) {
+                    this._stepQueueRunning = false;
+                    return;
+                }
+                this._stepQueueRunning = true;
+                const nextStep = this._stepQueue.shift();
+
+                // Mark previous steps as completed, current as active
+                for (let s = 1; s < nextStep; s++) {
+                    const el = document.getElementById(`step-${s}`);
+                    if (el) el.className = 'analysis-step completed';
+                }
+                const activeEl = document.getElementById(`step-${nextStep}`);
+                if (activeEl) activeEl.className = 'analysis-step active';
+                this.currentAnalysisStep = nextStep;
+
+                setTimeout(() => this._drainStepQueue(), 1200);
             },
 
             async submitToAPI() {
@@ -1664,88 +1716,114 @@ handleFile(file) {
             },
 
             // ✅ Nueva función para enviar a /api/chat
-// ✅ Simplificar submitToChat - usar solo inFlight
-submitToChat: async function (base64Data) {
-    if (this.inFlight) {
-        console.warn('[optimizer] submitToChat ya en ejecución');
-        return;
-    }
-    this.inFlight = true;
-    
-    this.setState('analyzing');
-    try {
-        const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/chat`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ base64Data }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error del servidor: ${response.statusText}`);
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let leftoverBuffer = '';
-
-        while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-            leftoverBuffer += decoder.decode(value, { stream: true });
-
-            const lines = leftoverBuffer.split('\n');
-            leftoverBuffer = lines.pop();
-
-            for (const line of lines) {
-                if (!line.trim()) continue;
-                try {
-                    const event = JSON.parse(line);
-                    this.handleChatEvent(event);
-                } catch (e) {
-                    console.warn('[optimizer] línea NDJSON inválida descartada:', line);
+            // ✅ Simplificar submitToChat - usar solo inFlight
+            submitToChat: async function (base64Data) {
+                if (this.inFlight) {
+                    console.warn('[optimizer] submitToChat ya en ejecución');
+                    return;
                 }
-            }
-        }
+                this.inFlight = true;
 
-        if (leftoverBuffer.trim()) {
-            try {
-                const event = JSON.parse(leftoverBuffer);
-                this.handleChatEvent(event);
-            } catch (e) {
-                console.warn('[optimizer] línea NDJSON final inválida:', leftoverBuffer);
-            }
-        }
+                this.setState('analyzing');
+                try {
+                    const response = await fetch(`${OPTIMIZER_BACKEND_URL}/api/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ base64Data }),
+                    });
 
-    } catch (err) {
-        this.setState('upload');
-        const errorDiv = document.getElementById('upload-error');
-        errorDiv.innerText = `Error en chat: ${err.message}`;
-        errorDiv.style.display = 'block';
-    } finally {
-        this.inFlight = false;
-    }
-},
+                    if (!response.ok) {
+                        throw new Error(`Error del servidor: ${response.statusText}`);
+                    }
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let leftoverBuffer = '';
+
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+                        leftoverBuffer += decoder.decode(value, { stream: true });
+
+                        const lines = leftoverBuffer.split('\n');
+                        leftoverBuffer = lines.pop();
+
+                        for (const line of lines) {
+                            if (!line.trim()) continue;
+                            try {
+                                const event = JSON.parse(line);
+                                this.handleChatEvent(event);
+                            } catch (e) {
+                                console.warn('[optimizer] línea NDJSON inválida descartada:', line);
+                            }
+                        }
+                    }
+
+                    if (leftoverBuffer.trim()) {
+                        try {
+                            const event = JSON.parse(leftoverBuffer);
+                            this.handleChatEvent(event);
+                        } catch (e) {
+                            console.warn('[optimizer] línea NDJSON final inválida:', leftoverBuffer);
+                        }
+                    }
+
+                } catch (err) {
+                    this.setState('upload');
+                    const errorDiv = document.getElementById('upload-error');
+                    errorDiv.innerText = `Error en chat: ${err.message}`;
+                    errorDiv.style.display = 'block';
+                } finally {
+                    this.inFlight = false;
+                }
+            },
 
             // ✅ Manejar eventos del chat
             handleChatEvent: function (event) {
                 if (event.type === 'meta') {
                     this.state.conversationId = event.conversationId;
-                    this.setState('chat');
-                    // ✅ Actualizar header con datos del perfil (si vienen en meta)
-                    if (event.name) document.getElementById('chat-profile-name').textContent = event.name;
-                    if (event.role) document.getElementById('chat-profile-role').textContent = event.role;
-                    if (event.initials) document.getElementById('chat-avatar').textContent = event.initials;
+                    // Store profile data for later use when we transition to chat screen
+                    this._pendingProfile = {
+                        name: event.name || '',
+                        role: event.role || '',
+                        initials: event.initials || ''
+                    };
+                    // Do NOT transition screens here. Stay on analyzing screen until first turn.
                 }
                 else if (event.type === 'progress') {
-                    // ✅ Actualizar pasos de análisis (solo para primer turno)
                     this.handleProgressEvent({ step: event.step });
                 }
                 else if (event.type === 'turn') {
-                    this.renderTurn(event.data);
-                    sessionStorage.setItem(
-                        `chat-turn-${this.state.conversationId}-${event.data.state}`,
-                        JSON.stringify(event.data)
-                    );
+                    const messagesContainer = document.getElementById('chat-messages');
+                    const isFirstTurn = messagesContainer.children.length === 0;
+
+                    if (isFirstTurn) {
+                        // Complete all analysis steps before transitioning
+                        this.completeAllSteps();
+                        // Apply pending profile data
+                        if (this._pendingProfile) {
+                            const p = this._pendingProfile;
+                            if (p.name) document.getElementById('chat-profile-name').textContent = p.name;
+                            if (p.role) document.getElementById('chat-profile-role').textContent = p.role;
+                            if (p.initials) document.getElementById('chat-avatar').textContent = p.initials;
+                            this._pendingProfile = null;
+                        }
+                        // Brief pause so user sees all steps completed before transition
+                        setTimeout(() => {
+                            this.setState('chat');
+                            this.renderTurn(event.data);
+                            sessionStorage.setItem(
+                                `chat-turn-${this.state.conversationId}-${event.data.state}`,
+                                JSON.stringify(event.data)
+                            );
+                        }, 800);
+                    } else {
+                        this.renderTurn(event.data);
+                        sessionStorage.setItem(
+                            `chat-turn-${this.state.conversationId}-${event.data.state}`,
+                            JSON.stringify(event.data)
+                        );
+                    }
                 }
                 else if (event.type === 'error') {
                     this.setState('upload');
@@ -1955,9 +2033,6 @@ submitToChat: async function (base64Data) {
 
             // ✅ Elegir alternativa
             chooseAlternative: function (state, altId, altText) {
-                if (this.inFlight) return;
-                this.inFlight = true;
-
                 // ✅ Guardar en sessionStorage
                 const key = `chat-${this.state.conversationId}-${state}`;
                 sessionStorage.setItem(key, JSON.stringify({
@@ -2059,9 +2134,6 @@ submitToChat: async function (base64Data) {
 
             // ✅ Manejar acción rápida
             handleQuickAction: function (action) {
-                if (this.inFlight) return;
-                this.inFlight = true;
-
                 let message;
                 switch (action) {
                     case 'skip':
